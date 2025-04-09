@@ -50,7 +50,6 @@ const Game = () => {
       fabricCanvas.freeDrawingBrush.width = 5;
 
       fabricCanvas.on("mouse:wheel", (options) => {
-        console.log('options', options);
         const delta = options.e.deltaY > 0 ? 1 : -1;
         setBrushWidth((prev) => {
             const newWidth = Math.max(5, Math.min(30, prev + delta));
@@ -73,7 +72,6 @@ const Game = () => {
     }
   }, [color, brushWidth]);
 
-  console.log("color", color);
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-5">
