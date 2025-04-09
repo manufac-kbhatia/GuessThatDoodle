@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Underdog } from 'next/font/google'
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-});
+
+const underdog = Underdog({ subsets: ['latin'], weight: "400" })
 
 export const metadata: Metadata = {
   title: "GuessThatDoodle",
@@ -23,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={underdog.className}>
         {children}
       </body>
     </html>
