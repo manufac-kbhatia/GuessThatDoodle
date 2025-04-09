@@ -82,7 +82,7 @@ const Game = () => {
         <div className="flex gap-4">
           <input
             type="color"
-            className="h-10"
+            className="h-10 cursor-pointer"
             value={color}
             onChange={(e) => setColor(e.currentTarget.value)}
           />
@@ -91,7 +91,7 @@ const Game = () => {
               <button
                 key={swatch}
                 title={idx === 0 ? "Basic" : swatch}
-                className={`w-8 h-8 border-2 ${
+                className={`w-8 h-8 cursor-pointer border-2 ${
                   color === swatch ? "black" : "border-white"
                 } shadow-sm`}
                 style={{ backgroundColor: swatch }}
@@ -102,7 +102,7 @@ const Game = () => {
           <div className="flex w-10 h-10 border-2 border-black justify-center items-center">
             <div style={{width: brushWidth, height: brushWidth, backgroundColor: color, borderRadius: "100%"}} />
           </div>
-          <IconTrash size={40} onClick={() => fabricCanvasRef.current?.clear()} />
+          <IconTrash size={40} onClick={() => fabricCanvasRef.current?.clear()} className="cursor-pointer" />
         </div>
         
       </div>
