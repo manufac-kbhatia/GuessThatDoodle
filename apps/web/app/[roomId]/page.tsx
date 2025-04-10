@@ -1,40 +1,46 @@
 "use client";
 import { IconTrash } from "@tabler/icons-react";
-// import { useParams } from "next/navigation"
+import { useParams } from "next/navigation"
 import * as fabric from "fabric";
 import { useEffect, useRef, useState } from "react";
-
-const swatchColors = [
-    "#000000", // Basic Black
-    "#FFFFFF", // White
-    "#FF0000", // Red
-    "#00FF00", // Lime
-    "#0000FF", // Blue
-    "#FFFF00", // Yellow
-    "#FFA500", // Orange
-    "#800080", // Purple
-    "#00FFFF", // Aqua / Cyan
-    "#A52A2A", // Brown
-    "#808080", // Gray
-    "#FFC0CB", // Pink
-    "#ADD8E6", // Light Blue
-    "#90EE90", // Light Green
-    "#FF69B4", // Hot Pink
-    "#F5DEB3", // Wheat
-    "#8B4513", // Saddle Brown
-    "#2F4F4F", // Dark Slate Gray
-    "#4682B4", // Steel Blue
-    "#FFD700", // Gold
-  ];
-  
+import { swatchColors } from "../utils.ts/swatches";  
+import { WS_URL } from "../utils.ts";
 
 const Game = () => {
-  // const params = useParams();
+  const params = useParams();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
+  useEffect(() => {
+    const ws = new WebSocket(`${WS_URL}`)
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            type: "JOIN_ROOM",
+            roomId: params.roomId
+        }))
+        setSocket(ws);
+    }
+
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (
+          message.type === "CANVAS_UPDATE"
+        ) {
+            console.log("Receving update");
+          const canvasData = message.canvas;
+          if (fabricCanvasRef.current) {
+            fabricCanvasRef.current.loadFromJSON(canvasData, () => {
+              fabricCanvasRef.current?.requestRenderAll();
+            });
+          }
+        }
+      };
+    
+}, [params])
 
   useEffect(() => {
     let fabricCanvas: fabric.Canvas;
@@ -56,6 +62,18 @@ const Game = () => {
             return newWidth;
         });
       })
+
+      fabricCanvas.on("path:created", () => {
+        if (socket) {
+          socket.send(
+            JSON.stringify({
+              type: "CANVAS_UPDATE",
+              canvas: fabricCanvas.toJSON(),
+            })
+          );
+        }
+      });
+      
       fabricCanvasRef.current = fabricCanvas;
     }
 
@@ -63,7 +81,7 @@ const Game = () => {
     return () => {
       fabricCanvas.dispose();
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (fabricCanvasRef.current && fabricCanvasRef.current.freeDrawingBrush) {
@@ -71,6 +89,7 @@ const Game = () => {
       fabricCanvasRef.current.freeDrawingBrush.width = brushWidth;
     }
   }, [color, brushWidth]);
+
 
   return (
     <div className="h-screen flex justify-center items-center">
