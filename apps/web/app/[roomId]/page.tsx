@@ -1,102 +1,115 @@
 "use client";
 import { IconTrash } from "@tabler/icons-react";
-import { useParams } from "next/navigation"
-import * as fabric from "fabric";
-import { useEffect, useRef, useState } from "react";
+// import { useParams } from "next/navigation"
+import { useRef, useState } from "react";
 import { swatchColors } from "../utils.ts/swatches";  
-import { WS_URL } from "../utils.ts";
+// import { WS_URL } from "../../utils.ts";
+
+export interface DrawData {
+  x: number;
+  y: number;
+  color: string;
+  lineWidth: number;
+  end: boolean;
+}
 
 const Game = () => {
-  const params = useParams();
+  // const params = useParams();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-
-  useEffect(() => {
-    const ws = new WebSocket(`${WS_URL}`)
-
-    ws.onopen = () => {
-        ws.send(JSON.stringify({
-            type: "JOIN_ROOM",
-            roomId: params.roomId
-        }))
-        setSocket(ws);
-    }
-
-    ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (
-          message.type === "CANVAS_UPDATE"
-        ) {
-            console.log("Receving update");
-          const canvasData = message.canvas;
-          if (fabricCanvasRef.current) {
-            fabricCanvasRef.current.loadFromJSON(canvasData, () => {
-              fabricCanvasRef.current?.requestRenderAll();
-            });
-          }
-        }
-      };
-    
-}, [params])
-
-  useEffect(() => {
-    let fabricCanvas: fabric.Canvas;
-    const canvas = canvasRef.current
-    if (canvas !== null) {
-      fabricCanvas = new fabric.Canvas(canvas, {
-        width: 800,
-        height: 600,
-        isDrawingMode: true,
-      });
-      fabricCanvas.freeDrawingBrush = new fabric.PencilBrush(fabricCanvas);
-      fabricCanvas.freeDrawingBrush.color = "#000000";
-      fabricCanvas.freeDrawingBrush.width = 5;
-
-      fabricCanvas.on("mouse:wheel", (options) => {
-        const delta = options.e.deltaY > 0 ? 1 : -1;
-        setBrushWidth((prev) => {
-            const newWidth = Math.max(5, Math.min(30, prev + delta));
-            return newWidth;
-        });
-      })
-
-      fabricCanvas.on("path:created", () => {
-        if (socket) {
-          socket.send(
-            JSON.stringify({
-              type: "CANVAS_UPDATE",
-              canvas: fabricCanvas.toJSON(),
-            })
-          );
-        }
-      });
-      
-      fabricCanvasRef.current = fabricCanvas;
-    }
+  // const [socket, setSocket] = useState<WebSocket | null>(null);
+  const myTurn = true;
+  let drawing = false;
 
 
-    return () => {
-      fabricCanvas.dispose();
+  function getCoords(event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) {
+    if (!canvasRef.current) return { x: 0, y: 0 };
+    const rect = canvasRef.current.getBoundingClientRect();
+    const point = "touches" in event ? event.touches[0] : event;
+    if (!point) return { x: 0, y: 0 };
+    return {
+      x: ((point.clientX - rect.left) * canvasRef.current.width) / rect.width,
+      y: ((point.clientY - rect.top) * canvasRef.current.height) / rect.height,
     };
-  }, [socket]);
+  }
 
-  useEffect(() => {
-    if (fabricCanvasRef.current && fabricCanvasRef.current.freeDrawingBrush) {
-      fabricCanvasRef.current.freeDrawingBrush.color = color;
-      fabricCanvasRef.current.freeDrawingBrush.width = brushWidth;
+  function startDrawing(event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) {
+    if (!myTurn) return;
+    drawing = true;
+    const { x, y } = getCoords(event);
+    const ctx = canvasRef.current?.getContext("2d");
+    if (ctx) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
     }
-  }, [color, brushWidth]);
+    event.preventDefault();
+  }
 
+  function draw(event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) {
+    if (!drawing || !canvasRef.current) return;
+    const { x, y } = getCoords(event);
+    const ctx = canvasRef.current.getContext("2d");
+    if (ctx) {
+      ctx.lineWidth = brushWidth;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = color;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+    event.preventDefault();
+    if (drawData.current)
+    drawData.current.push({ x, y, color: color, lineWidth: brushWidth, end: false });
+  }
+
+  function stopDrawing() {
+    if (!drawing) return;
+    drawing = false;
+    const ctx = canvasRef.current?.getContext("2d");
+    if (ctx) ctx.beginPath();
+    if(!drawData.current)return;
+    if (drawData.current.length > 0) {
+      const lastDrawData = drawData.current[drawData.current.length - 1];
+      if (lastDrawData)
+      lastDrawData.end = true;
+    }
+  }
+
+  function handleScroll(event: React.WheelEvent<HTMLCanvasElement>) {
+    const delta = event.deltaY > 0 ? 1 : -1;
+    setBrushWidth((prev) => {
+      const newWidth = Math.max(5, Math.min(30, prev + delta));
+      return newWidth;
+    });
+  }
+
+  function clearCanvas() {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
+
+    if (ctx) {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
+  }
 
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-5">
-        <canvas
+      <canvas
+          className="bg-white border-2 border-black cursor-crosshair"
           ref={canvasRef}
-          className="inset-shadow-sm shadow-md rounded-md"
+          onMouseDown={startDrawing}
+          onTouchStart={startDrawing}
+          onMouseMove={draw}
+          onTouchMove={draw}
+          onMouseUp={stopDrawing}
+          onTouchEnd={stopDrawing}
+          onWheel={handleScroll}
+          width={800}
+          height={600}
         />
         <div className="flex gap-4">
           <input
@@ -121,7 +134,7 @@ const Game = () => {
           <div className="flex w-10 h-10 border-2 border-black justify-center items-center">
             <div style={{width: brushWidth, height: brushWidth, backgroundColor: color, borderRadius: "100%"}} />
           </div>
-          <IconTrash size={40} onClick={() => fabricCanvasRef.current?.clear()} className="cursor-pointer" />
+          <IconTrash size={40} onClick={clearCanvas} className="cursor-pointer" />
         </div>
         
       </div>
