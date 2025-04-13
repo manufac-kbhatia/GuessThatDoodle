@@ -1,42 +1,41 @@
-import { WebSocket, WebSocketServer } from 'ws';
-import { MessageTypes } from './utils/messageTypes';
-import { GamesManager } from './Managers/gameManagers';
+import { WebSocketServer } from 'ws';
+import { GamesManager } from './managers/gameManagers';
+import { parseData, sendError } from './utils';
+import { GameEvents } from './events/gamesEvents';
+import { z } from 'zod';
+import { CreateGame, JoinGame, StartGame, ZodParsers } from './schemas';
 
 const wss = new WebSocketServer({ port: 8080 });
-const Users: WebSocket[] = [];
 
 const games = new GamesManager();
 
 wss.on('connection', function connection(ws) {
-    Users.push(ws);
 
-    ws.on('message', async function message(data) {
-      let parsedData;
-      if (typeof data !== "string") {
-        parsedData = JSON.parse(data.toString());
-      } else {
-        parsedData = JSON.parse(data);
-      }
+   ws.on("message", function message(rawData) {
+        const parsedData = parseData(rawData);
+        const parsedType = z.nativeEnum(GameEvents).safeParse(parsedData.type);
+        if(parsedType.success === false) {
+            sendError(ws, "Invalid Input");
+            return;
+        }
+        const type = parsedType.data;
 
-      const type = parsedData.type;
+        const {data, success} = ZodParsers[type].safeParse(parsedData);
+        if (success === false) {
+            sendError(ws, "Invalid Input");
+            return;
+        }
 
-      if (parsedData.type === MessageTypes.JOIN_GAME) {
-        const name = parsedData.userName;
-        const gameId = parsedData.gameId;
-      }
+        if(type === GameEvents.CREATE_GAME) {
+            games.createGame(ws, data as CreateGame);
+        }
 
-      if (parsedData.type === "CANVAS_UPDATE") {
-          Users.forEach((user) => {
-              if (user !== ws) {
-                console.log("sending users");
-                user.send(JSON.stringify({
-                    type: "CANVAS_UPDATE",
-                    canvas: parsedData.canvas
-                }))
-            }
-        })
-      }
-  
-    });
-  
+        if (type === GameEvents.JOIN_GAME) {
+            games.joinGame(ws, data as JoinGame)
+        }
+
+        if (type === GameEvents.START_GAME) {
+            games.startGame(ws, data as StartGame)
+        }
+   })
   });
