@@ -1,5 +1,6 @@
+import { ClientEvents } from "@repo/common";
 import { RawData, WebSocket } from "ws";
-import { ClientEvents } from "../../../../packages/common/src/events";
+
 
 export function parseData(data: RawData) {
   let parseData;

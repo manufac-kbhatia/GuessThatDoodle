@@ -1,17 +1,10 @@
 import { WebSocket } from "ws";
-import {
-  CreateGame,
-  DrawingData,
-  GuessWord,
-  JoinGame,
-  StartGame,
-  WordSelected,
-} from "@repo/common/schema";
+
 import { Game } from "./game";
 import { Player } from "./player";
 import { sendError } from "../utils";
-import { ClientEvents, ReasonToEndGame, States } from "@repo/common/events";
-import { GameSettings, ReasonToEndGameType } from "@repo/common/types";
+import { ClientEvents, ReasonToEndGame, ReasonToEndGameType, States,CreateGame, DrawingData, GuessWord, JoinGame, StartGame, WordSelected } from "@repo/common";
+import { GameSettings } from "@repo/common/types";
 
 
 export class GamesManager {

@@ -6,8 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "exports": {
-    "./events": "./src/events.ts",
-    "./schema": "./src/schemas.ts",
+    ".": "./src/index.ts",
     "./types": "./src/types.ts"
   },
   "devDependencies": {
