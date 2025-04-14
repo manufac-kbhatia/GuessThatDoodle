@@ -6,18 +6,13 @@ import {
   JoinGame,
   StartGame,
   WordSelected,
-} from "../schemas";
-import { Game, GameSettings, States } from "./game";
+} from "@repo/common/schema";
+import { Game } from "./game";
 import { Player } from "./player";
 import { sendError } from "../utils";
-import { ClientEvents } from "../events/gamesEvents";
+import { ClientEvents, ReasonToEndGame, States } from "@repo/common/events";
+import { GameSettings, ReasonToEndGameType } from "@repo/common/types";
 
-export const ReasonToEndGame =  {
-    TIME_UP: "TIME_UP",
-    ALL_PLAYERS_GUESSED: "ALL_PLAYERS_GUESSED",
-} as const;
-
-export type ReasonToEndGameType = (typeof ReasonToEndGame)[keyof typeof ReasonToEndGame];
 
 export class GamesManager {
   private games: Map<string, Game>; // Map of gameId and the Game
@@ -147,7 +142,6 @@ export class GamesManager {
   };
 
   guessWord = (ws: WebSocket, data: GuessWord) => {
-    // TODO: Check of the game is started and in guess mode
     const game = this.games.get(data.gameId);
     if (!game) {
       sendError(ws, "Game not found");
@@ -162,7 +156,7 @@ export class GamesManager {
         player.ws.send(
           JSON.stringify({
             type: "GUESS",
-            message: data.guessedWord, // if game state is not guess mode then treat the message send by user as a normal chat
+            message: data.guessedWord, // if game state is not in guess mode then treat the message send by user as a normal chat message
           })
         );
       });
@@ -235,7 +229,7 @@ export class GamesManager {
         this.declareWinner();
         return;
     }
-    this.givePoints();
+    // Give points 
     game.gameState.currentPlayer = 0;
     game.gameState.word = "";
     game.gameState.drawData = [];

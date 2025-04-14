@@ -1,9 +1,10 @@
 import { WebSocketServer } from 'ws';
 import { GamesManager } from './managers/gameManagers';
 import { parseData, sendError } from './utils';
-import { GameEvents } from './events/gamesEvents';
+import { GameEvents } from '../../../packages/common/src/events';
 import { z } from 'zod';
-import { CreateGame, JoinGame, StartGame, ZodParsers } from './schemas';
+import { CreateGame, JoinGame, StartGame, ZodParsers } from '@repo/common/schema';
+
 
 const wss = new WebSocketServer({ port: 8080 });
 

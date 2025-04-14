@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Underdog } from 'next/font/google'
 import "./globals.css";
+import { Providers } from "./provider";
 
 
 const underdog = Underdog({ subsets: ['latin'], weight: "400" })
@@ -18,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={underdog.className}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

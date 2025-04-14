@@ -1,25 +1,19 @@
 "use client";
 import { IconTrash } from "@tabler/icons-react";
-// import { useParams } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useRef, useState } from "react";
 import { swatchColors } from "../utils.ts/swatches";  
-// import { WS_URL } from "../../utils.ts";
+import { DrawData } from "@repo/common/types";
+// import { WS_URL } from "../utils.ts";
 
-export interface DrawData {
-  x: number;
-  y: number;
-  color: string;
-  lineWidth: number;
-  end: boolean;
-}
 
 const Game = () => {
-  // const params = useParams();
+  const params = useParams();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
-  // const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const myTurn = true;
   let drawing = false;
 

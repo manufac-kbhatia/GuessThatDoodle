@@ -1,5 +1,5 @@
 import { RawData, WebSocket } from "ws";
-import { ClientEvents, GameEvents } from "../events/gamesEvents";
+import { ClientEvents } from "../../../../packages/common/src/events";
 
 export function parseData(data: RawData) {
   let parseData;

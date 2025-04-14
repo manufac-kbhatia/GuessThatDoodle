@@ -1,38 +1,8 @@
 import { randomUUID } from "crypto";
 import { Player } from "./player";
+import { GameSettings, GameState } from "@repo/common/types";
+import { States } from "@repo/common/events";
 
-export const States =  {
-    NOT_STARTED: "NOT_STARTED",
-    START_GAME: "START_GAME",
-    CHOOSING_WORD: "JOIN_GAME",
-    GUESS_WORD: "GUESS_WORD",
-} as const;
-
-export type State = (typeof States)[keyof typeof States];
-
-export interface DrawData {
-    x: number;
-    y: number;
-    color: string;
-    lineWidth: number;
-    end: boolean;
-  }
-
-export interface GameSettings {
-    rounds: number;
-    totalPlayers: number;
-    drawTime: number;
-}
-export interface GameState {
-    state: State;
-    drawData: DrawData[];
-    currentRound: number;
-    currentPlayer: number;
-    word: string | null;
-    playedRounds: number;
-    timerStartedAt: number | null;
-
-}
 export class Game {
     public gameId: string;
     public creator: Player;

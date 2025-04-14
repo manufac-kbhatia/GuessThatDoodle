@@ -1,5 +1,7 @@
 import {z, ZodObject, ZodRawShape} from "zod";
-import { GameEvent, GameEvents } from "../events/gamesEvents";
+import { GameEvents } from "./events";
+import { GameEvent } from "./types";
+
 
 
 export const BasePayload = z.object({
@@ -8,7 +10,7 @@ export const BasePayload = z.object({
 
 export const CreateGameSchema = BasePayload.extend({
     playerName: z.string().min(5, {message: "Please provide name of atleat 5 characters"}),
-    gameSettings: z.tuple([z.number(), z.number(), z.number()])
+    gameSettings: z.tuple([z.number().describe("rounds"), z.number().describe("total players"), z.number().describe("draw time in seconds")])
 })
 
 

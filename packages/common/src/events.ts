@@ -8,8 +8,6 @@ export const GameEvents =  {
     WORD_SELECTED: "WORD_SELECTED",
 } as const;
 
-export type GameEvent = (typeof GameEvents)[keyof typeof GameEvents];
-
 export const ClientEvents =  {
     ERROR: "ERROR",
     GAME_CREATED: "GAME_CREATED",
@@ -21,4 +19,14 @@ export const ClientEvents =  {
     GUESS_CHOOSEN_WORD: "GUESS_CHOOSEN_WORD",
 } as const;
 
-export type ClientEvent = (typeof ClientEvents)[keyof typeof ClientEvents];
+export const ReasonToEndGame =  {
+    TIME_UP: "TIME_UP",
+    ALL_PLAYERS_GUESSED: "ALL_PLAYERS_GUESSED",
+} as const;
+
+export const States =  {
+    NOT_STARTED: "NOT_STARTED",
+    START_GAME: "START_GAME",
+    CHOOSING_WORD: "JOIN_GAME",
+    GUESS_WORD: "GUESS_WORD",
+} as const;
