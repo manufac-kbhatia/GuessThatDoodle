@@ -2,14 +2,7 @@ import { WebSocketServer } from "ws";
 import { GamesManager } from "./managers/gameManagers";
 import { parseData, sendError } from "./utils";
 import { z } from "zod";
-import {
-  CreateGame,
-  JoinGame,
-  StartGame,
-  GameEvents,
-  ZodParsers,
-  WordSelected,
-} from "@repo/common";
+import { CreateGame, JoinGame, StartGame, GameEvents, ZodParsers, WordSelected } from "@repo/common";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -46,7 +39,7 @@ wss.on("connection", function connection(ws) {
     }
 
     if (type === GameEvents.WORD_SELECTED) {
-        games.wordSelected(ws, data as WordSelected);
-      }
+      games.wordSelected(ws, data as WordSelected);
+    }
   });
 });

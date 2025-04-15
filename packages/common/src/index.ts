@@ -32,8 +32,7 @@ export const States = {
 } as const;
 
 export type State = (typeof States)[keyof typeof States];
-export type ReasonToEndGameType =
-  (typeof ReasonToEndGame)[keyof typeof ReasonToEndGame];
+export type ReasonToEndGameType = (typeof ReasonToEndGame)[keyof typeof ReasonToEndGame];
 export type ClientEvent = (typeof ClientEvents)[keyof typeof ClientEvents];
 export type GameEvent = (typeof GameEvents)[keyof typeof GameEvents];
 
@@ -45,16 +44,12 @@ export const BasePayload = z.object({
 });
 
 export const CreateGameSchema = BasePayload.extend({
-  playerName: z
-    .string()
-    .min(5, { message: "Please provide name of atleat 5 characters" }),
+  playerName: z.string().min(5, { message: "Please provide name of atleat 5 characters" }),
 });
 
 export const JoinGameSchema = BasePayload.extend({
   gameId: z.string(),
-  playerName: z
-    .string()
-    .min(5, { message: "Please provide name of atleat 5 characters" }),
+  playerName: z.string().min(5, { message: "Please provide name of atleat 5 characters" }),
 });
 
 export const StartGameSchema = BasePayload.extend({

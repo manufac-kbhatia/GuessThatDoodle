@@ -1,8 +1,9 @@
 "use client";
 import { GameEvents, StartGame, States, WordSelected } from "@repo/common";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useAppContext } from "../app/context";
 import Drawboard from "./Canvas";
+import GameHeader from "./GameHeader";
 
 const GameScreen = () => {
   const {
@@ -15,6 +16,8 @@ const GameScreen = () => {
     myTurn,
     gameSettings,
     words,
+    choosenWord,
+    guessWord,
   } = useAppContext();
   const [chats] = useState<string[]>(["hi", "there"]);
 
@@ -30,50 +33,42 @@ const GameScreen = () => {
   const handleWordSelect = (word: string) => {
     if (!game || !currentPlayer || !socket) return;
     const data: WordSelected = {
-        type: GameEvents.WORD_SELECTED,
-        gameId: game.gameId,
-        playerId: currentPlayer.id,
-        word,
-    }
+      type: GameEvents.WORD_SELECTED,
+      gameId: game.gameId,
+      playerId: currentPlayer.id,
+      word,
+    };
     socket.send(JSON.stringify(data));
-  }
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen gap-1 ">
-      <div className="border-2 border-black flex w-full max-w-6xl justify-between items-center">
-        <div>Timer</div>
-        {gameState.state === States.GUESS_WORD ? myTurn === true ? "Draw" : "Guess" : "Waiting"}
-        <div className="space-x-2 p-2">
-            <button className="border border-black">like</button>
-            <button className="border border-black">dislike</button>
-        </div>
-      </div>
+    <div className="flex flex-col justify-center items-center h-screen gap-1  ">
+      <GameHeader />
       <div className="grid grid-cols-12 w-full max-w-6xl border-2 border-black h-[70%]">
         <div className="col-span-2 flex flex-col">
           {players.map((player) => {
             return (
-              <div
-                key={player.id}
-                className="flex flex-col border-2 border-black"
-              >
+              <div key={player.id} className="flex flex-col border-2 border-black">
                 <div>
                   {player.name}
                   {game?.creator.id === player.id ? <>(Admin)</> : null}
-                  {player.id === me?.id ? <>(You)</>: null}
+                  {player.id === me?.id ? <>(You)</> : null}
                 </div>
                 <div>Score: {player.score}</div>
               </div>
             );
-          })}   
+          })}
         </div>
         <div className="col-span-7 bg-neutral-400 h-full w-full">
-          {gameState.state === States.WAITING ? (
-            <div>{JSON.stringify(gameSettings)}</div>
-          ) : null}
+          {gameState.state === States.WAITING ? <div>{JSON.stringify(gameSettings)}</div> : null}
           {gameState.state === States.CHOOSING_WORD && myTurn === true ? (
             <div className="flex justify-center items-center w-full h-full gap-5">
               {words.map((word) => (
-                <button className="border-2 border-black w-16" key={word} onClick={() => handleWordSelect(word)}>
+                <button
+                  className="border-2 border-black w-16"
+                  key={word}
+                  onClick={() => handleWordSelect(word)}
+                >
                   {word}
                 </button>
               ))}
@@ -83,8 +78,7 @@ const GameScreen = () => {
             <div>{currentPlayer?.name} is choosing a word</div>
           ) : null}
 
-          {gameState.state === States.GUESS_WORD && myTurn === true ? <Drawboard/> : null}
-          {gameState.state === States.GUESS_WORD && myTurn === false ? <>Guess the word</> : null}
+          {gameState.state === States.GUESS_WORD ? <Drawboard /> : null}
         </div>
         <div className="col-span-3 border-2 border-red-900 flex flex-col">
           {chats.map((chat, index) => (
@@ -103,9 +97,7 @@ const GameScreen = () => {
         <button
           className="border-2 border-black"
           onClick={() =>
-            navigator.clipboard.writeText(
-              `http://localhost:3000/?game=${game?.gameId}`,
-            )
+            navigator.clipboard.writeText(`http://localhost:3000/?game=${game?.gameId}`)
           }
         >
           invite

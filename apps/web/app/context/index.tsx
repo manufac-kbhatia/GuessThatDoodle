@@ -14,9 +14,7 @@ interface Context {
   players: Player[];
   setPlayers: Dispatch<SetStateAction<Player[]>>;
   gameState: { state: State; currentRound: number };
-  setGameState: Dispatch<
-    SetStateAction<{ state: State; currentRound: number }>
-  >;
+  setGameState: Dispatch<SetStateAction<{ state: State; currentRound: number }>>;
   gameSettings?: GameSettings;
   setGameSettings: Dispatch<SetStateAction<GameSettings | undefined>>;
   currentPlayer?: PlayerInfo;
@@ -33,9 +31,7 @@ interface Context {
 
 const ContextInstance = createContext<Context | undefined>(undefined);
 
-export function SocketContextProvider({
-  children,
-}: PropsWithChildren): JSX.Element {
+export function SocketContextProvider({ children }: PropsWithChildren): JSX.Element {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [game, setGame] = useState<Game | null>(null);
   const [me, setMe] = useState<PlayerInfo>();
@@ -68,10 +64,7 @@ export function SocketContextProvider({
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (
-        data.type === ClientEvents.GAME_CREATED ||
-        data.type === ClientEvents.GAME_JOINED
-      ) {
+      if (data.type === ClientEvents.GAME_CREATED || data.type === ClientEvents.GAME_JOINED) {
         const game = data.game as Game;
         const me = data.me as PlayerInfo;
         setGame(game);
@@ -176,11 +169,7 @@ export function SocketContextProvider({
     setMyTurn,
   ]);
 
-  return (
-    <ContextInstance.Provider value={contextValue}>
-      {children}
-    </ContextInstance.Provider>
-  );
+  return <ContextInstance.Provider value={contextValue}>{children}</ContextInstance.Provider>;
 }
 
 export function useAppContext(): Context {

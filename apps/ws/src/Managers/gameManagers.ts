@@ -86,8 +86,7 @@ export class GamesManager {
     // Get the player who will draw first
     const totalPlayers = game.players.length;
     const currentPlayerToDraw = game.players[game.gameState.currentPlayer];
-    game.gameState.currentPlayer =
-      (game.gameState.currentPlayer + 1) % totalPlayers;
+    game.gameState.currentPlayer = (game.gameState.currentPlayer + 1) % totalPlayers;
 
     if (!currentPlayerToDraw) return;
 
@@ -95,7 +94,7 @@ export class GamesManager {
     currentPlayerToDraw.ws.send(
       JSON.stringify({
         type: ClientEvents.CHOOSE_WORD,
-        words: ["Bee", "Car", "Tiger"],
+        words: ["Bee", "MasterChef", "Pussy Cat"],
       }),
     );
     // Tell about current player to others

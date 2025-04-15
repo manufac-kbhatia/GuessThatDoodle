@@ -1,11 +1,12 @@
 {
-  "name": "guessThatDoodle",
+  "name": "guess_that_doodle",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "pretty": "prettier --cache --write .",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
@@ -20,5 +21,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "codepolish-prettier-config": "^1.0.0"
+  }
 }

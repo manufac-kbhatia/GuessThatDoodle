@@ -6,18 +6,15 @@ import { DrawData } from "@repo/common/types";
 import { useAppContext } from "../app/context";
 
 const Drawboard = () => {
-  const { socket } = useAppContext();
+  const { socket, myTurn } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
-  const myTurn = true;
   let drawing = false;
 
   function getCoords(
-    event:
-      | React.MouseEvent<HTMLCanvasElement, MouseEvent>
-      | React.TouchEvent<HTMLCanvasElement>,
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
   ) {
     if (!canvasRef.current) return { x: 0, y: 0 };
     const rect = canvasRef.current.getBoundingClientRect();
@@ -30,9 +27,7 @@ const Drawboard = () => {
   }
 
   function startDrawing(
-    event:
-      | React.MouseEvent<HTMLCanvasElement, MouseEvent>
-      | React.TouchEvent<HTMLCanvasElement>,
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
   ) {
     if (!myTurn) return;
     drawing = true;
@@ -46,9 +41,7 @@ const Drawboard = () => {
   }
 
   function draw(
-    event:
-      | React.MouseEvent<HTMLCanvasElement, MouseEvent>
-      | React.TouchEvent<HTMLCanvasElement>,
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
   ) {
     if (!drawing || !canvasRef.current) return;
     const { x, y } = getCoords(event);
@@ -71,6 +64,8 @@ const Drawboard = () => {
         lineWidth: brushWidth,
         end: false,
       });
+
+    console.log(drawData.current);
   }
 
   function stopDrawing() {
@@ -78,11 +73,11 @@ const Drawboard = () => {
     drawing = false;
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) ctx.beginPath();
-    if (!drawData.current) return;
-    if (drawData.current.length > 0) {
-      const lastDrawData = drawData.current[drawData.current.length - 1];
-      if (lastDrawData) lastDrawData.end = true;
-    }
+    // if (!drawData.current) return;
+    // if (drawData.current.length > 0) {
+    //   const lastDrawData = drawData.current[drawData.current.length - 1];
+    //   if (lastDrawData) lastDrawData.end = true;
+    // }
   }
 
   function handleScroll(event: React.WheelEvent<HTMLCanvasElement>) {
@@ -99,25 +94,26 @@ const Drawboard = () => {
 
     if (ctx) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      drawData.current = [];
     }
   }
 
   return (
-
-      <div className="flex flex-col gap-5">
-        <canvas
-          className="bg-white border-2 border-black cursor-crosshair"
-          ref={canvasRef}
-          onMouseDown={startDrawing}
-          onTouchStart={startDrawing}
-          onMouseMove={draw}
-          onTouchMove={draw}
-          onMouseUp={stopDrawing}
-          onTouchEnd={stopDrawing}
-          onWheel={handleScroll}
-          width={800}
-          height={600}
-        />
+    <div className="flex flex-col gap-5">
+      <canvas
+        className={`bg-white border-2 border-black ${myTurn ? "cursor-crosshair" : "cursor-default"}`}
+        ref={canvasRef}
+        onMouseDown={startDrawing}
+        onTouchStart={startDrawing}
+        onMouseMove={draw}
+        onTouchMove={draw}
+        onMouseUp={stopDrawing}
+        onTouchEnd={stopDrawing}
+        onWheel={handleScroll}
+        width={800}
+        height={600}
+      />
+      {myTurn ? (
         <div className="flex gap-4">
           <input
             type="color"
@@ -148,14 +144,10 @@ const Drawboard = () => {
               }}
             />
           </div>
-          <IconTrash
-            size={40}
-            onClick={clearCanvas}
-            className="cursor-pointer"
-          />
+          <IconTrash size={40} onClick={clearCanvas} className="cursor-pointer" />
         </div>
-      </div>
-
+      ) : null}
+    </div>
   );
 };
 

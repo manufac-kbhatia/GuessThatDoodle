@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={underdog.className}>
+      <body className={`${underdog.className} bg-[url('/background.png')]`}>
         <Providers>{children}</Providers>
       </body>
     </html>

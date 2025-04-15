@@ -50,19 +50,19 @@ const JoinGameScreen = () => {
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-5 w-full max-w-md">
-        {error === true ? (
-          <div className="text-red-600 font-bold">Please enter a name</div>
-        ) : null}
+        {error === true ? <div className="text-red-600 font-bold">Please enter a name</div> : null}
         <input
           type="text"
+          placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.currentTarget.value)}
-          className="border-2 border-black"
+          className="p-2 text-4xl bg-white rounded-md"
         />
-        <button className="border-2 border-black" onClick={handlePlay}>
+        <div className="grid grid-cols-4 border-2 border-red-900 h-40"></div>
+        <button className="text-4xl text-white bg-blue-400 rounded-md" onClick={handlePlay}>
           Play!
         </button>
-        <button onClick={handleCreateGame} className="border-2 border-black">
+        <button onClick={handleCreateGame} className="text-4xl text-white bg-green-400 rounded-md">
           Create Game
         </button>
       </div>
