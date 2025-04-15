@@ -1,24 +1,24 @@
 "use client";
 import { IconTrash } from "@tabler/icons-react";
-import { useParams } from "next/navigation"
 import { useRef, useState } from "react";
-import { swatchColors } from "../utils.ts/swatches";  
+import { swatchColors } from "../app/utils/swatches";
 import { DrawData } from "@repo/common/types";
-// import { WS_URL } from "../utils.ts";
+import { useAppContext } from "../app/context";
 
-
-const Game = () => {
-  const params = useParams();
+const Drawboard = () => {
+  const { socket } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
   const myTurn = true;
   let drawing = false;
 
-
-  function getCoords(event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) {
+  function getCoords(
+    event:
+      | React.MouseEvent<HTMLCanvasElement, MouseEvent>
+      | React.TouchEvent<HTMLCanvasElement>,
+  ) {
     if (!canvasRef.current) return { x: 0, y: 0 };
     const rect = canvasRef.current.getBoundingClientRect();
     const point = "touches" in event ? event.touches[0] : event;
@@ -29,7 +29,11 @@ const Game = () => {
     };
   }
 
-  function startDrawing(event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) {
+  function startDrawing(
+    event:
+      | React.MouseEvent<HTMLCanvasElement, MouseEvent>
+      | React.TouchEvent<HTMLCanvasElement>,
+  ) {
     if (!myTurn) return;
     drawing = true;
     const { x, y } = getCoords(event);
@@ -41,7 +45,11 @@ const Game = () => {
     event.preventDefault();
   }
 
-  function draw(event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) {
+  function draw(
+    event:
+      | React.MouseEvent<HTMLCanvasElement, MouseEvent>
+      | React.TouchEvent<HTMLCanvasElement>,
+  ) {
     if (!drawing || !canvasRef.current) return;
     const { x, y } = getCoords(event);
     const ctx = canvasRef.current.getContext("2d");
@@ -56,7 +64,13 @@ const Game = () => {
     }
     event.preventDefault();
     if (drawData.current)
-    drawData.current.push({ x, y, color: color, lineWidth: brushWidth, end: false });
+      drawData.current.push({
+        x,
+        y,
+        color: color,
+        lineWidth: brushWidth,
+        end: false,
+      });
   }
 
   function stopDrawing() {
@@ -64,11 +78,10 @@ const Game = () => {
     drawing = false;
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) ctx.beginPath();
-    if(!drawData.current)return;
+    if (!drawData.current) return;
     if (drawData.current.length > 0) {
       const lastDrawData = drawData.current[drawData.current.length - 1];
-      if (lastDrawData)
-      lastDrawData.end = true;
+      if (lastDrawData) lastDrawData.end = true;
     }
   }
 
@@ -90,9 +103,9 @@ const Game = () => {
   }
 
   return (
-    <div className="h-screen flex justify-center items-center">
+
       <div className="flex flex-col gap-5">
-      <canvas
+        <canvas
           className="bg-white border-2 border-black cursor-crosshair"
           ref={canvasRef}
           onMouseDown={startDrawing}
@@ -126,14 +139,24 @@ const Game = () => {
             ))}
           </div>
           <div className="flex w-10 h-10 border-2 border-black justify-center items-center">
-            <div style={{width: brushWidth, height: brushWidth, backgroundColor: color, borderRadius: "100%"}} />
+            <div
+              style={{
+                width: brushWidth,
+                height: brushWidth,
+                backgroundColor: color,
+                borderRadius: "100%",
+              }}
+            />
           </div>
-          <IconTrash size={40} onClick={clearCanvas} className="cursor-pointer" />
+          <IconTrash
+            size={40}
+            onClick={clearCanvas}
+            className="cursor-pointer"
+          />
         </div>
-        
       </div>
-    </div>
+
   );
 };
 
-export default Game;
+export default Drawboard;

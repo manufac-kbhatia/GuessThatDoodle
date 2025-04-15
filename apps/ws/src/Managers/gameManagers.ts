@@ -3,9 +3,19 @@ import { WebSocket } from "ws";
 import { Game } from "./game";
 import { Player } from "./player";
 import { sendError } from "../utils";
-import { ClientEvents, ReasonToEndGame, ReasonToEndGameType, States,CreateGame, DrawingData, GuessWord, JoinGame, StartGame, WordSelected } from "@repo/common";
+import {
+  ClientEvents,
+  ReasonToEndGame,
+  ReasonToEndGameType,
+  States,
+  CreateGame,
+  DrawingData,
+  GuessWord,
+  JoinGame,
+  StartGame,
+  WordSelected,
+} from "@repo/common";
 import { GameSettings } from "@repo/common/types";
-
 
 export class GamesManager {
   private games: Map<string, Game>; // Map of gameId and the Game
@@ -16,38 +26,43 @@ export class GamesManager {
 
   createGame = (ws: WebSocket, gameData: CreateGame) => {
     const creator = new Player(ws, gameData.playerName);
-    const gameSettings: GameSettings = {
-      rounds: gameData.gameSettings[0],
-      totalPlayers: gameData.gameSettings[1],
-      drawTime: gameData.gameSettings[2],
-    };
-    const game = new Game(creator, gameSettings);
+    const game = new Game(creator);
     this.games.set(game.gameId, game);
     ws.send(
       JSON.stringify({
         type: ClientEvents.GAME_CREATED,
-        gameId: game.gameId,
-        player: creator.getPlayer(),
-      })
+        game: game.getGameDetails(),
+        me: creator.getPlayerInfo(),
+      }),
     );
   };
 
   joinGame = (ws: WebSocket, data: JoinGame) => {
-    const player = new Player(ws, data.playerName);
+    const newPlayer = new Player(ws, data.playerName);
     const game = this.games.get(data.gameId);
     if (!game) {
       sendError(ws, "Game not found");
       return;
     }
-    game.players.push(player);
+    game.players.push(newPlayer);
+
+    newPlayer.ws.send(
+      JSON.stringify({
+        type: ClientEvents.GAME_JOINED,
+        game: game.getGameDetails(),
+        me: newPlayer.getPlayerInfo(),
+      }),
+    );
 
     game.players.forEach((player) => {
-      player.ws.send(
-        JSON.stringify({
-          type: ClientEvents.PLAYER_JOINED,
-          players: game.players.map((player) => player.getPlayer()),
-        })
-      );
+      if (player.id !== newPlayer.id) {
+        player.ws.send(
+          JSON.stringify({
+            type: ClientEvents.PLAYER_JOINED,
+            player: newPlayer.getPlayer(),
+          }),
+        );
+      }
     });
   };
 
@@ -62,15 +77,12 @@ export class GamesManager {
     if (game.players.length < 2) {
       sendError(ws, "Atleast 2 players are required to start the game");
     }
-    if (game.gameState.state !== States.NOT_STARTED) return;
+    if (game.gameState.state !== States.WAITING) return;
 
-    // Update the state of the game
-    game.gameState.state = States.START_GAME;
     this.startNewRound(game);
-
   };
 
-  startNewRound = (game: Game) =>  {
+  startNewRound = (game: Game) => {
     // Get the player who will draw first
     const totalPlayers = game.players.length;
     const currentPlayerToDraw = game.players[game.gameState.currentPlayer];
@@ -84,7 +96,7 @@ export class GamesManager {
       JSON.stringify({
         type: ClientEvents.CHOOSE_WORD,
         words: ["Bee", "Car", "Tiger"],
-      })
+      }),
     );
     // Tell about current player to others
     game.players.forEach((player) => {
@@ -92,14 +104,14 @@ export class GamesManager {
         player.ws.send(
           JSON.stringify({
             type: ClientEvents.CHOOSING_WORD,
-            player: currentPlayerToDraw.getPlayer(),
-          })
+            player: currentPlayerToDraw.getPlayerInfo(),
+          }),
         );
       }
     });
 
     game.gameState.state = States.CHOOSING_WORD;
-  }
+  };
 
   wordSelected = (ws: WebSocket, data: WordSelected) => {
     const game = this.games.get(data.gameId);
@@ -117,7 +129,7 @@ export class GamesManager {
       JSON.stringify({
         type: ClientEvents.CHOOSEN_WORD,
         word: data.word,
-      })
+      }),
     );
 
     game.players.forEach((player) => {
@@ -126,7 +138,7 @@ export class GamesManager {
           JSON.stringify({
             type: ClientEvents.GUESS_CHOOSEN_WORD,
             word: data.word.split(" ").map((w) => w.length),
-          })
+          }),
         );
       }
     });
@@ -150,7 +162,7 @@ export class GamesManager {
           JSON.stringify({
             type: "GUESS",
             message: data.guessedWord, // if game state is not in guess mode then treat the message send by user as a normal chat message
-          })
+          }),
         );
       });
       return;
@@ -159,12 +171,12 @@ export class GamesManager {
     // check if the guessed word is correct and update the status for this player
     let message = data.guessedWord;
     if (data.guessedWord.toLowerCase() === game.gameState.word?.toLowerCase()) {
-        const player = game.players.find((player) => player.id === data.playerId);
-        if (!player) return;
-        player.guessed = true;
-        player.guessedAt = new Date;
+      const player = game.players.find((player) => player.id === data.playerId);
+      if (!player) return;
+      player.guessed = true;
+      player.guessedAt = new Date();
 
-        message = `${player.name} guesses right`;
+      message = `${player.name} guesses right`;
     }
 
     game.players.forEach((player) => {
@@ -173,56 +185,56 @@ export class GamesManager {
           type: "GUESS",
           player: player.getPlayer(),
           message,
-        })
+        }),
       );
     });
 
     // Check if all players (except the current player who have choosen the words) have guessed
-    const allPlayersGuessed = game.players.every((player) => player.id !== currentPlayer?.id && player.guessed === true);
+    const allPlayersGuessed = game.players.every(
+      (player) => player.id !== currentPlayer?.id && player.guessed === true,
+    );
     if (allPlayersGuessed === true) {
-        this.endRound(game, ReasonToEndGame.ALL_PLAYERS_GUESSED);
+      this.endRound(game, ReasonToEndGame.ALL_PLAYERS_GUESSED);
     }
   };
 
   drawing = (ws: WebSocket, data: DrawingData) => {
     const game = this.games.get(data.gameId);
     if (!game) {
-        sendError(ws, "Game not found");
-        return;
+      sendError(ws, "Game not found");
+      return;
     }
     if (game.gameState.state !== States.GUESS_WORD) {
-        sendError(ws, "You are not allowed to draw at this moment");
-        return;
+      sendError(ws, "You are not allowed to draw at this moment");
+      return;
     }
     // check if the game exist and is in guess mode or not
     const player = game.players.find((player) => player.id === data.playerId);
     if (!player) {
-        sendError(ws, "Player not found");
-        return;
+      sendError(ws, "Player not found");
+      return;
     }
     // check if the persone who is drawing is the current player or not
     const currentPlayerToDraw = game.players[game.gameState.currentPlayer];
     if (!currentPlayerToDraw) return;
     if (player.id !== currentPlayerToDraw.id) {
-        sendError(ws, "It's not your turn to draw right now");
-        return;
+      sendError(ws, "It's not your turn to draw right now");
+      return;
     }
 
     // update the game state
     // send updated state
-    
-};
+  };
 
   endRound = (game: Game, reason: ReasonToEndGameType) => {
-
     // Clear the timer of the game
     // setup game for next round
-    game.gameState.playedRounds += 1;
-    if (game.gameState.playedRounds > game.gameSettings.rounds) {
-        this.declareWinner();
-        return;
+    game.gameState.currentRound += 1;
+    if (game.gameState.currentRound > game.gameSettings.rounds) {
+      this.declareWinner();
+      return;
     }
-    // Give points 
+    // Give points
     game.gameState.currentPlayer = 0;
     game.gameState.word = "";
     game.gameState.drawData = [];
@@ -231,6 +243,6 @@ export class GamesManager {
     this.startNewRound(game);
   };
 
-  givePoints = () => {}
+  givePoints = () => {};
   declareWinner = () => {};
 }

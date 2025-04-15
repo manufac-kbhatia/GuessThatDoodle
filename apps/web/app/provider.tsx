@@ -1,16 +1,11 @@
-'use client';
+"use client";
 
-import { SocketContextProvider } from "./context/socket";
-
+import { SocketContextProvider } from "./context";
 
 export function Providers({
-    children,
-  }: Readonly<{
-    children: React.ReactNode;
-  }>) {
-  return (
-    <SocketContextProvider>
-        {children}
-    </SocketContextProvider>
-  );
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return <SocketContextProvider>{children}</SocketContextProvider>;
 }
