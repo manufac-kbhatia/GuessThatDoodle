@@ -1,12 +1,13 @@
 "use client";
 import { IconTrash } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { swatchColors } from "../app/utils/swatches";
 import { DrawData } from "@repo/common/types";
 import { useAppContext } from "../app/context";
+import { ClientEvents, DrawingData, GameEvents } from "@repo/common";
 
 const CanvasBoard = () => {
-  const { socket, myTurn } = useAppContext();
+  const { socket, myTurn, game, me } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
@@ -43,7 +44,7 @@ const CanvasBoard = () => {
   function draw(
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
   ) {
-    if (!drawing || !canvasRef.current) return;
+    if (!drawing || !canvasRef.current || !game || !me) return;
     const { x, y } = getCoords(event);
     const ctx = canvasRef.current.getContext("2d");
     if (ctx) {
@@ -56,28 +57,64 @@ const CanvasBoard = () => {
       ctx.moveTo(x, y);
     }
     event.preventDefault();
-    if (drawData.current)
-      drawData.current.push({
-        x,
-        y,
-        color: color,
-        lineWidth: brushWidth,
-        end: false,
-      });
+      const data: DrawingData = {
+        type: GameEvents.DRAW,
+        drawData: {
+          x,
+          y,
+          lineWidth: brushWidth,
+          color,
+          end: false,
+        },
+        gameId: game.gameId,
+        playerId: me.id,
+      };
+      socket?.send(JSON.stringify(data));
 
-    console.log(drawData.current);
+    if (drawData.current) drawData.current.push(data.drawData);
   }
 
   function stopDrawing() {
-    if (!drawing) return;
+    if (!drawing || !socket || !me || !game) return;
     drawing = false;
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) ctx.beginPath();
-    // if (!drawData.current) return;
-    // if (drawData.current.length > 0) {
-    //   const lastDrawData = drawData.current[drawData.current.length - 1];
-    //   if (lastDrawData) lastDrawData.end = true;
-    // }
+    if (!drawData.current) return;
+    if (drawData.current.length > 0) {
+      const lastDrawData = drawData.current[drawData.current.length - 1];
+      if (lastDrawData) {
+        lastDrawData.end = true;
+        const {x, y, lineWidth, color, end} = lastDrawData;
+        const data: DrawingData = {
+          type: GameEvents.DRAW,
+          drawData: {
+            x,
+            y,
+            lineWidth,
+            color,
+            end
+          },
+          gameId: game.gameId,
+          playerId: me.id,
+        };
+        socket.send(JSON.stringify(data));
+      }
+      }
+  }
+
+  function revieveDrawData(data: DrawData) {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
+    if (ctx) {
+      ctx.lineWidth = data.lineWidth;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = data.color;
+      ctx.lineTo(data.x, data.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(data.x, data.y);
+      if (data.end) ctx.beginPath();
+    }
   }
 
   function handleScroll(event: React.WheelEvent<HTMLCanvasElement>) {
@@ -98,10 +135,21 @@ const CanvasBoard = () => {
     }
   }
 
+  useEffect(() => {
+    if (!socket) return;
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === ClientEvents.DRAW && myTurn === false) {
+        const drawingData = data.drawData as DrawData;
+        revieveDrawData(drawingData);
+      }
+    };
+  },[myTurn, socket]);
+
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4 h-full">
       <canvas
-        className={`bg-white border-2 border-black ${myTurn ? "cursor-crosshair" : "cursor-default"}`}
+        className={`h-full bg-white ${myTurn ? "cursor-crosshair" : "cursor-default"}`}
         ref={canvasRef}
         onMouseDown={startDrawing}
         onTouchStart={startDrawing}
@@ -110,8 +158,8 @@ const CanvasBoard = () => {
         onMouseUp={stopDrawing}
         onTouchEnd={stopDrawing}
         onWheel={handleScroll}
-        width={800}
-        height={600}
+        width={900}
+        height={900}
       />
       {myTurn ? (
         <div className="flex gap-4">
@@ -121,13 +169,13 @@ const CanvasBoard = () => {
             value={color}
             onChange={(e) => setColor(e.currentTarget.value)}
           />
-          <div className="grid grid-cols-10">
+          <div className="grid grid-cols-10 gap-1 rounded-md p-1 bg-neutral-600">
             {swatchColors.map((swatch, idx) => (
               <button
                 key={swatch}
                 title={idx === 0 ? "Basic" : swatch}
-                className={`w-8 h-8 cursor-pointer border-2 ${
-                  color === swatch ? "black" : "border-white"
+                className={`w-7 h-7 cursor-pointer rounded-md border-2 ${
+                  color === swatch ? "border-black" : "border-none"
                 } shadow-sm`}
                 style={{ backgroundColor: swatch }}
                 onClick={() => setColor(swatch)}
@@ -144,7 +192,7 @@ const CanvasBoard = () => {
               }}
             />
           </div>
-          <IconTrash size={40} onClick={clearCanvas} className="cursor-pointer" />
+          <IconTrash size={30} onClick={clearCanvas} className="cursor-pointer" />
         </div>
       ) : null}
     </div>

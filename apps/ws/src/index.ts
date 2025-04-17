@@ -2,7 +2,7 @@ import { WebSocketServer } from "ws";
 import { GamesManager } from "./managers/gameManagers";
 import { parseData, sendError } from "./utils";
 import { z } from "zod";
-import { CreateGame, JoinGame, StartGame, GameEvents, ZodParsers, WordSelected } from "@repo/common";
+import { CreateGame, JoinGame, StartGame, GameEvents, ZodParsers, WordSelected, DrawingData } from "@repo/common";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -14,14 +14,14 @@ wss.on("connection", function connection(ws) {
     const parsedType = z.nativeEnum(GameEvents).safeParse(parsedData.type);
     if (parsedType.success === false) {
       console.log(parsedType.error);
-      sendError(ws, "Invalid Input");
+      console.log(parsedData);
+      sendError(ws, "Invalid Type");
       return;
     }
     const type = parsedType.data;
 
     const { data, success, error } = ZodParsers[type].safeParse(parsedData);
     if (success === false) {
-      console.log(error);
       sendError(ws, "Invalid Input");
       return;
     }
@@ -40,6 +40,11 @@ wss.on("connection", function connection(ws) {
 
     if (type === GameEvents.WORD_SELECTED) {
       games.wordSelected(ws, data as WordSelected);
+    }
+
+    if (type === GameEvents.DRAW) {
+      console.log(data);
+      games.drawing(ws, data as DrawingData);
     }
   });
 });

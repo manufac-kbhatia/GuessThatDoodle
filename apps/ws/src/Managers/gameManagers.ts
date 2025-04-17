@@ -86,7 +86,6 @@ export class GamesManager {
     // Get the player who will draw first
     const totalPlayers = game.players.length;
     const currentPlayerToDraw = game.players[game.gameState.currentPlayer];
-    game.gameState.currentPlayer = (game.gameState.currentPlayer + 1) % totalPlayers;
 
     if (!currentPlayerToDraw) return;
 
@@ -221,8 +220,17 @@ export class GamesManager {
       return;
     }
 
-    // update the game state
     // send updated state
+    game.players.forEach((player) => {
+      if (player.id !== data.playerId) {
+        player.ws.send(
+          JSON.stringify({
+            type: ClientEvents.DRAW,
+            drawData: data.drawData,
+          }),
+        );
+      }
+    });
   };
 
   endRound = (game: Game, reason: ReasonToEndGameType) => {

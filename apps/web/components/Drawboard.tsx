@@ -17,8 +17,10 @@ const Drawboard = () => {
     socket.send(JSON.stringify(data));
   };
   return (
-    <div className="bg-neutral-400 h-full w-full">
+    <div className="bg-neutral-400 h-[70vh] rounded-2xl">
+      {/* Settings */}
       {gameState.state === States.WAITING ? <div>{JSON.stringify(gameSettings)}</div> : null}
+      {/* Choose Words */}
       {gameState.state === States.CHOOSING_WORD && myTurn === true ? (
         <div className="flex justify-center items-center w-full h-full gap-5">
           {words.map((word) => (
@@ -32,10 +34,12 @@ const Drawboard = () => {
           ))}
         </div>
       ) : null}
+      {/* Choosing Word */}
       {gameState.state === States.CHOOSING_WORD && myTurn === false ? (
         <div>{currentPlayer?.name} is choosing a word</div>
       ) : null}
 
+      {/* Canvas draw board */}
       {gameState.state === States.GUESS_WORD ? <CanvasBoard /> : null}
     </div>
   );

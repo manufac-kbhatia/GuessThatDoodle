@@ -19,10 +19,10 @@ const GameScreen = () => {
   };
 
   return (
-    <div className="flex items-center h-screen">
-      <div className="min-w-7xl mx-auto flex flex-col gap-2">
+    <div className="h-screen border-2 border-red-900">
+      <div className="m-10 flex flex-col gap-2">
         <GameHeader />
-        <div className="grid grid-cols-12 border-2 border-black">
+        <div className="grid grid-cols-12 gap-2">
           {/* Scoreboard */}
           <div className="col-span-2">
             <Scoreboard />
@@ -37,7 +37,7 @@ const GameScreen = () => {
           </div>
         </div>
         {gameState.state === States.WAITING ? (
-          <div className="flex bg-neutral-600 p-1 gap-1 text-white">
+          <div className="flex bg-neutral-600 p-1 gap-1 text-white w-4xl rounded-md ">
             <button
               className=" flex-2/3 text-4xl bg-blue-400 rounded-md"
               disabled={game?.creator.id !== me?.id}
