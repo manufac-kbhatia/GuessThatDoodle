@@ -5,7 +5,7 @@ import { swatchColors } from "../app/utils/swatches";
 import { DrawData } from "@repo/common/types";
 import { useAppContext } from "../app/context";
 
-const Canvas = () => {
+const CanvasBoard = () => {
   const { socket, myTurn } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawData = useRef<DrawData[]>([]);
@@ -151,4 +151,4 @@ const Canvas = () => {
   );
 };
 
-export default Canvas;
+export default CanvasBoard;

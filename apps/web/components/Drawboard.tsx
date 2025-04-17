@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "../app/context";
 import { WordSelected, GameEvents, States } from "@repo/common";
+import CanvasBoard from "./CanvasBoard";
 
 const Drawboard = () => {
   const { gameState, gameSettings, socket, currentPlayer, game, words, myTurn } = useAppContext();
@@ -35,7 +36,7 @@ const Drawboard = () => {
         <div>{currentPlayer?.name} is choosing a word</div>
       ) : null}
 
-      {gameState.state === States.GUESS_WORD ? <Drawboard /> : null}
+      {gameState.state === States.GUESS_WORD ? <CanvasBoard /> : null}
     </div>
   );
 };
