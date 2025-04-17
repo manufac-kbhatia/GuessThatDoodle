@@ -12,7 +12,7 @@ const GameHeader = () => {
       : guessWord.map((word) => "_ ".repeat(word).trim()).join("    ");
 
   return (
-    <div className="border-2 border-black flex w-full max-w-6xl justify-between items-center backdrop-blur-md">
+    <div className="flex justify-between items-center p-4 backdrop-blur-md rounded-2xl">
       <div>Timer</div>
       <div className="flex flex-col gap-2 justify-center items-center text-2xl">
         {gameState.state === States.GUESS_WORD ? (myTurn === true ? "Draw" : "Guess") : "Waiting"}
