@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { Player } from "./player";
 import { GameSettings, GameState, Game as GameType } from "@repo/common/types";
-import { States } from "@repo/common";
+import { State, States } from "@repo/common";
 
 export class Game {
   public gameId: string;
@@ -18,6 +18,7 @@ export class Game {
       rounds: 3,
       totalPlayers: 10,
       drawTime: 60,
+      wordSelectTime: 10,
     };
     this.gameState = {
       state: States.WAITING,
@@ -40,7 +41,21 @@ export class Game {
         currentRound: this.gameState.currentRound,
       },
     };
-
     return game;
+  };
+
+  addPlayer = (player: Player) => {
+    this.players.push(player);
+  };
+
+  broadcast = (data: Record<string, any>, except?: Player) => {
+    const broadcastTo = this.players.filter((p) => p.id !== except?.id);
+    broadcastTo.forEach((player) => {
+      player.send(data);
+    });
+  };
+
+  updateState = (state: State) => {
+    this.gameState.state = state;
   };
 }

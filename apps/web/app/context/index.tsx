@@ -4,6 +4,11 @@ import { WS_URL } from "../utils";
 import { ClientEvents, State, States } from "@repo/common";
 import { Game, GameSettings, Player, PlayerInfo } from "@repo/common/types";
 
+export interface Message {
+  message: string;
+  player: PlayerInfo;
+}
+
 interface Context {
   socket: WebSocket | null;
   setSocket: Dispatch<SetStateAction<WebSocket | null>>;
@@ -64,6 +69,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log(data);
       if (data.type === ClientEvents.GAME_CREATED || data.type === ClientEvents.GAME_JOINED) {
         const game = data.game as Game;
         const me = data.me as PlayerInfo;

@@ -1,6 +1,7 @@
 import { WebSocket } from "ws";
 import { randomUUID } from "crypto";
 import { PlayerInfo, Player as PlayerType } from "@repo/common/types";
+import { ClientEvents } from "@repo/common";
 export class Player {
   public id: string;
   public name: string;
@@ -18,7 +19,7 @@ export class Player {
     this.score = 0;
   }
 
-  getPlayer() {
+  getPlayer = () => {
     const player: PlayerType = {
       id: this.id,
       name: this.name,
@@ -26,13 +27,17 @@ export class Player {
       guessed: this.guessed,
     };
     return player;
-  }
+  };
 
-  getPlayerInfo() {
+  getPlayerInfo = () => {
     const player: PlayerInfo = {
       id: this.id,
       name: this.name,
     };
     return player;
-  }
+  };
+
+  send = (data: Record<string, any>) => {
+    this.ws.send(JSON.stringify(data));
+  };
 }

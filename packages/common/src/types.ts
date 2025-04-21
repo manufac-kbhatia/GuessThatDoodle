@@ -26,6 +26,7 @@ export interface GameSettings {
   rounds: number;
   totalPlayers: number;
   drawTime: number;
+  wordSelectTime: number;
 }
 export interface GameState {
   state: State;

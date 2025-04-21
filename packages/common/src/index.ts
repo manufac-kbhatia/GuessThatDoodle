@@ -8,6 +8,7 @@ export const GameEvents = {
   UPDATE_CANVAS: "UPDATE_CANVAS",
   WORD_SELECTED: "WORD_SELECTED",
   DRAW: "DRAW",
+  GUESS: "GUESS",
 } as const;
 
 export const ClientEvents = {
@@ -20,6 +21,7 @@ export const ClientEvents = {
   CHOOSEN_WORD: "CHOOSEN_WORD",
   GUESS_CHOOSEN_WORD: "GUESS_CHOOSEN_WORD",
   DRAW: "DRAW",
+  GUESS: "GUESS",
 } as const;
 
 export const ReasonToEndGame = {
@@ -64,14 +66,11 @@ export const LeaveGameSchema = BasePayload.extend({
 
 export const WordSelectedSchema = BasePayload.extend({
   word: z.string(),
-  playerId: z.string(),
   gameId: z.string(),
 });
 
 export const GuessWordSchema = BasePayload.extend({
   gameId: z.string(),
-  playerId: z.string(),
-  playerName: z.string(),
   guessedWord: z.string(),
 });
 
@@ -93,6 +92,7 @@ export const ZodParsers: Record<GameEvent, ZodObject<ZodRawShape>> = {
   [GameEvents.START_GAME]: StartGameSchema,
   [GameEvents.WORD_SELECTED]: WordSelectedSchema,
   [GameEvents.DRAW]: DrawingSchema,
+  [GameEvents.GUESS]: GuessWordSchema,
 
   [GameEvents.END_GAME]: StartGameSchema,
   [GameEvents.LEAVE_GAME]: StartGameSchema,

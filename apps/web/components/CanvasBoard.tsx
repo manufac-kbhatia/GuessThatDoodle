@@ -57,19 +57,19 @@ const CanvasBoard = () => {
       ctx.moveTo(x, y);
     }
     event.preventDefault();
-      const data: DrawingData = {
-        type: GameEvents.DRAW,
-        drawData: {
-          x,
-          y,
-          lineWidth: brushWidth,
-          color,
-          end: false,
-        },
-        gameId: game.gameId,
-        playerId: me.id,
-      };
-      socket?.send(JSON.stringify(data));
+    const data: DrawingData = {
+      type: GameEvents.DRAW,
+      drawData: {
+        x,
+        y,
+        lineWidth: brushWidth,
+        color,
+        end: false,
+      },
+      gameId: game.gameId,
+      playerId: me.id,
+    };
+    socket?.send(JSON.stringify(data));
 
     if (drawData.current) drawData.current.push(data.drawData);
   }
@@ -84,7 +84,7 @@ const CanvasBoard = () => {
       const lastDrawData = drawData.current[drawData.current.length - 1];
       if (lastDrawData) {
         lastDrawData.end = true;
-        const {x, y, lineWidth, color, end} = lastDrawData;
+        const { x, y, lineWidth, color, end } = lastDrawData;
         const data: DrawingData = {
           type: GameEvents.DRAW,
           drawData: {
@@ -92,14 +92,14 @@ const CanvasBoard = () => {
             y,
             lineWidth,
             color,
-            end
+            end,
           },
           gameId: game.gameId,
           playerId: me.id,
         };
         socket.send(JSON.stringify(data));
       }
-      }
+    }
   }
 
   function revieveDrawData(data: DrawData) {
@@ -137,14 +137,14 @@ const CanvasBoard = () => {
 
   useEffect(() => {
     if (!socket) return;
-    socket.onmessage = (event) => {
+    socket.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
       if (data.type === ClientEvents.DRAW && myTurn === false) {
         const drawingData = data.drawData as DrawData;
         revieveDrawData(drawingData);
       }
-    };
-  },[myTurn, socket]);
+    });
+  });
 
   return (
     <div className="flex flex-col gap-4 h-full">

@@ -11,7 +11,6 @@ const Drawboard = () => {
     const data: WordSelected = {
       type: GameEvents.WORD_SELECTED,
       gameId: game.gameId,
-      playerId: currentPlayer.id,
       word,
     };
     socket.send(JSON.stringify(data));
