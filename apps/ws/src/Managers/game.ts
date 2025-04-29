@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { Player } from "./player";
 import { DrawData, GameSettings, GameState, Game as GameType } from "@repo/common/types";
-import { ClientEvents, ReasonToEndTurn, ReasonToEndTurnType, State, States } from "@repo/common";
+import { ClientEvents, State, States } from "@repo/common";
 
 export class Game {
   public gameId: string;
