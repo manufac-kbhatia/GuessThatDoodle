@@ -67,7 +67,6 @@ const CanvasBoard = () => {
         end: false,
       },
       gameId: game.gameId,
-      playerId: me.id,
     };
     socket?.send(JSON.stringify(data));
 
@@ -95,7 +94,6 @@ const CanvasBoard = () => {
             end,
           },
           gameId: game.gameId,
-          playerId: me.id,
         };
         socket.send(JSON.stringify(data));
       }

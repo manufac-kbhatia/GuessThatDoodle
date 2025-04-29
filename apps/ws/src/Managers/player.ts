@@ -40,4 +40,8 @@ export class Player {
   send = (data: Record<string, any>) => {
     this.ws.send(JSON.stringify(data));
   };
+
+  sendError = (errorMessage: string) => {
+    this.ws.send(JSON.stringify({ type: ClientEvents.ERROR, errorMessage }));
+  };
 }

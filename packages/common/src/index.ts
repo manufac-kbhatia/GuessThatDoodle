@@ -22,21 +22,25 @@ export const ClientEvents = {
   GUESS_CHOOSEN_WORD: "GUESS_CHOOSEN_WORD",
   DRAW: "DRAW",
   GUESS: "GUESS",
+  TURN_END: "TURN_END",
+  GAMEP_END: "GAMEP_END",
 } as const;
 
-export const ReasonToEndGame = {
+export const ReasonToEndTurn = {
   TIME_UP: "TIME_UP",
   ALL_PLAYERS_GUESSED: "ALL_PLAYERS_GUESSED",
 } as const;
 
 export const States = {
+  NOT_STARTED: "NOT_STARTED",
   WAITING: "WAITING",
   CHOOSING_WORD: "CHOOSING WORD",
   GUESS_WORD: "GUESS",
+  GAME_END: "GAME_END",
 } as const;
 
 export type State = (typeof States)[keyof typeof States];
-export type ReasonToEndGameType = (typeof ReasonToEndGame)[keyof typeof ReasonToEndGame];
+export type ReasonToEndTurnType = (typeof ReasonToEndTurn)[keyof typeof ReasonToEndTurn];
 export type ClientEvent = (typeof ClientEvents)[keyof typeof ClientEvents];
 export type GameEvent = (typeof GameEvents)[keyof typeof GameEvents];
 
@@ -76,7 +80,6 @@ export const GuessWordSchema = BasePayload.extend({
 
 export const DrawingSchema = BasePayload.extend({
   gameId: z.string(),
-  playerId: z.string(),
   drawData: z.object({
     x: z.number(),
     y: z.number(),

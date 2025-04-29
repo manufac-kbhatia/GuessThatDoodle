@@ -34,7 +34,7 @@ export interface GameState {
   currentRound: number;
   currentPlayer: number;
   word: string | null;
-  timerStartedAt: number | null;
+  timerStartedAt: Date | null;
 }
 
 export interface Game {

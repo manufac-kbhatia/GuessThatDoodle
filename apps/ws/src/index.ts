@@ -1,5 +1,4 @@
-import { WebSocketServer } from "ws";
-import { GamesManager } from "./managers/gameManagers";
+import { WebSocket, WebSocketServer } from "ws";
 import { parseData, sendError } from "./utils";
 import { z } from "zod";
 import {
@@ -11,11 +10,15 @@ import {
   WordSelected,
   DrawingData,
   GuessWord,
+  ClientEvents,
 } from "@repo/common";
+import { Player } from "./managers/player";
+import { Game } from "./managers/game";
 
 const wss = new WebSocketServer({ port: 8080 });
 
-const games = new GamesManager();
+const clients = new Map<WebSocket, Player>();
+const games = new Map<string, Game>();
 
 wss.on("connection", function connection(ws) {
   ws.on("message", function message(rawData) {
@@ -34,27 +37,57 @@ wss.on("connection", function connection(ws) {
     }
 
     if (type === GameEvents.CREATE_GAME) {
-      games.createGame(ws, data as CreateGame);
+      const { playerName } = data as CreateGame;
+      const creator = new Player(ws, playerName);
+      const game = new Game(creator);
+      clients.set(ws, creator);
+      games.set(game.gameId, game);
+      // Send created game to the creator
+      creator.send({
+        type: ClientEvents.GAME_CREATED,
+        game: game.getGameDetails(),
+        me: creator.getPlayerInfo(),
+      });
     }
 
     if (type === GameEvents.JOIN_GAME) {
-      games.joinGame(ws, data as JoinGame);
+      const { playerName, gameId } = data as JoinGame;
+      const newPlayer = new Player(ws, playerName);
+      clients.set(ws, newPlayer);
+      const game = games.get(gameId);
+      if (!game) return;
+      game.joinGame(newPlayer);
     }
 
+    const player = clients.get(ws);
+    if (!player) return;
+
     if (type === GameEvents.START_GAME) {
-      games.startGame(ws, data as StartGame);
+      const { gameId } = data as StartGame;
+      const game = games.get(gameId);
+      if (!game) return;
+      game.startGame(player);
     }
 
     if (type === GameEvents.WORD_SELECTED) {
-      games.wordSelected(ws, data as WordSelected);
+      const { word, gameId } = data as WordSelected;
+      const game = games.get(gameId);
+      if (!game) return;
+      game.wordSelected(player, word);
     }
 
     if (type === GameEvents.DRAW) {
-      games.drawing(ws, data as DrawingData);
+      const { drawData, gameId } = data as DrawingData;
+      const game = games.get(gameId);
+      if (!game) return;
+      game.drawing(player, drawData);
     }
 
     if (type === GameEvents.GUESS) {
-      games.guessWord(ws, data as GuessWord);
+      const { guessedWord, gameId } = data as GuessWord;
+      const game = games.get(gameId);
+      if (!game) return;
+      game.guessWord(player, guessedWord);
     }
   });
 });
