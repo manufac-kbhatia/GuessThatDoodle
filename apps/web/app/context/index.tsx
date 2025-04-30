@@ -26,6 +26,8 @@ interface Context {
   setGuessWord: Dispatch<SetStateAction<number[]>>;
   myTurn: boolean;
   setMyTurn: Dispatch<SetStateAction<boolean>>;
+  timer: number;
+  setTimer: Dispatch<SetStateAction<number>>;
 }
 
 const ContextInstance = createContext<Context | undefined>(undefined);
@@ -34,6 +36,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [game, setGame] = useState<Game | null>(null);
   const [me, setMe] = useState<PlayerInfo>();
+  const [timer, setTimer] = useState(0);
 
   const [currentPlayer, setCurrentPlayer] = useState<PlayerInfo>();
   const [myTurn, setMyTurn] = useState(false);
@@ -80,9 +83,9 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         }
         setCurrentPlayer(currentPlayer);
         setGame((prev) => {
-          if(!prev) return null;
-          return {...prev, gameState: {...prev.gameState, state: States.CHOOSING_WORD}}
-        })
+          if (!prev) return null;
+          return { ...prev, gameState: { ...prev.gameState, state: States.CHOOSING_WORD } };
+        });
       }
 
       if (data.type === ClientEvents.CHOOSE_WORD) {
@@ -91,8 +94,8 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         setMyTurn(true);
         setCurrentPlayer(me);
         setGame((prev) => {
-          if(!prev) return null;
-          return {...prev, gameState: {...prev.gameState, state: States.CHOOSING_WORD}}
+          if (!prev) return null;
+          return { ...prev, gameState: { ...prev.gameState, state: States.CHOOSING_WORD } };
         });
       }
 
@@ -100,18 +103,18 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         const word = data.word as string;
         setChoosenWord(word);
         setGame((prev) => {
-          if(!prev) return null;
-          return {...prev, gameState: {...prev.gameState, state: States.GUESS_WORD}}
-        })
+          if (!prev) return null;
+          return { ...prev, gameState: { ...prev.gameState, state: States.GUESS_WORD } };
+        });
       }
 
       if (data.type === ClientEvents.GUESS_CHOOSEN_WORD) {
         const word = data.word as number[];
         setGuessWord(word);
         setGame((prev) => {
-          if(!prev) return null;
-          return {...prev, gameState: {...prev.gameState, state: States.GUESS_WORD}}
-        })
+          if (!prev) return null;
+          return { ...prev, gameState: { ...prev.gameState, state: States.GUESS_WORD } };
+        });
       }
     };
   }, [me, socket]);
@@ -134,6 +137,8 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       setGuessWord,
       myTurn,
       setMyTurn,
+      timer,
+      setTimer
     };
   }, [
     socket,
@@ -152,6 +157,8 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
     setGuessWord,
     myTurn,
     setMyTurn,
+    timer,
+    setTimer,
   ]);
 
   return <ContextInstance.Provider value={contextValue}>{children}</ContextInstance.Provider>;

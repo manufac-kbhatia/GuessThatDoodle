@@ -19,43 +19,43 @@ const GameScreen = () => {
   };
 
   return (
-    <div className="h-screen border-2 border-red-900">
-      <div className="m-10 flex flex-col gap-2">
-        <GameHeader />
-        <div className="grid grid-cols-12 gap-2">
-          {/* Scoreboard */}
-          <div className="col-span-2">
-            <Scoreboard />
-          </div>
-          {/* DrawingBoard */}
-          <div className="col-span-7">
-            <Drawboard />
-          </div>
-          {/* Chats */}
-          <div className="col-span-3 ">
-            <Chats />
-          </div>
+    <div className="h-screen p-16 space-y-2">
+      <div className="grid grid-cols-12 gap-2">
+        <div className="col-span-12">
+          <GameHeader />
         </div>
-        {game?.gameState.state === States.WAITING ? (
-          <div className="flex bg-neutral-600 p-1 gap-1 text-white w-4xl rounded-md ">
-            <button
-              className=" flex-2/3 text-4xl bg-blue-400 rounded-md"
-              disabled={game?.creator.id !== me?.id}
-              onClick={handleStart}
-            >
-              Start
-            </button>
-            <button
-              className=" flex-1/3 text-4xl bg-green-500 rounded-md"
-              onClick={() =>
-                navigator.clipboard.writeText(`http://localhost:3000/?game=${game?.gameId}`)
-              }
-            >
-              Invite
-            </button>
-          </div>
-        ) : null}
+        {/* Scoreboard */}
+        <div className="col-span-2">
+          <Scoreboard />
+        </div>
+        {/* DrawingBoard */}
+        <div className="col-span-7">
+          <Drawboard />
+        </div>
+        {/* Chats */}
+        <div className="col-span-3 ">
+          <Chats />
+        </div>
       </div>
+      {game?.gameState.state === States.NOT_STARTED ? (
+        <div className="flex max-w-3xl mx-auto justify-center gap-2">
+          <button
+            className="flex-1 text-4xl bg-blue-400 rounded-md p-1 border-2 border-black"
+            disabled={game?.creator.id !== me?.id}
+            onClick={handleStart}
+          >
+            Start
+          </button>
+          <button
+            className="flex-1 text-4xl bg-green-500 rounded-md p-1 border-2 border-black"
+            onClick={() =>
+              navigator.clipboard.writeText(`http://localhost:3000/?game=${game?.gameId}`)
+            }
+          >
+            Invite
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 };

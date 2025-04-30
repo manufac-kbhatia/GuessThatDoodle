@@ -16,9 +16,11 @@ const Drawboard = () => {
     socket.send(JSON.stringify(data));
   };
   return (
-    <div className="bg-neutral-400 h-[70vh] rounded-2xl">
+    <div className="bg-neutral-400 h-[70vh] rounded-md">
       {/* Settings */}
-      {game?.gameState.state === States.WAITING ? <div>{JSON.stringify(game?.gameSettings)}</div> : null}
+      {game?.gameState.state === States.WAITING ? (
+        <div>{JSON.stringify(game?.gameSettings)}</div>
+      ) : null}
       {/* Choose Words */}
       {game?.gameState.state === States.CHOOSING_WORD && myTurn === true ? (
         <div className="flex justify-center items-center w-full h-full gap-5">

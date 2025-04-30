@@ -99,7 +99,6 @@ export class Game {
   };
 
   wordSelected = (player: Player, word: string) => {
-  
     // Check if the word is selected by current player or not
     const currentPlayerToDraw = this.players[this.gameState.currentPlayer];
     if (!currentPlayerToDraw || currentPlayerToDraw.id !== player.id) return;
@@ -202,20 +201,25 @@ export class Game {
     this.givePoints();
     this.gameState.currentPlayer += 1;
 
-    if(this.gameState.currentPlayer === this.players.length) {
+    if (this.gameState.currentPlayer === this.players.length) {
       this.gameState.currentPlayer = 0;
       this.gameState.currentRound += 1;
     }
 
     const endRoundTime = 5; // This means that the next round or turn will start after 5 seconds.
-    this.broadcast({type: ClientEvents.TURN_END, word: this.gameState.word, time: endRoundTime, players: this.players});
+    this.broadcast({
+      type: ClientEvents.TURN_END,
+      word: this.gameState.word,
+      time: endRoundTime,
+      players: this.players,
+    });
 
     this.gameState.word = "";
     this.gameState.state = States.CHOOSING_WORD;
 
     // play next turn
     setTimeout(() => {
-      if(this.gameState.currentRound > this.gameSettings.rounds) this.endGame()
+      if (this.gameState.currentRound > this.gameSettings.rounds) this.endGame();
       else this.nextTurn();
     }, endRoundTime * 1000);
   };
@@ -226,9 +230,7 @@ export class Game {
     playersWhoGuessed.forEach((player) => {
       if (player.guessed && player.guessedAt) {
         const points = 200;
-        const guessTime = Math.abs(
-          (timerStartedAt.getTime() - player.guessedAt.getTime()) / 1000
-        );
+        const guessTime = Math.abs((timerStartedAt.getTime() - player.guessedAt.getTime()) / 1000);
         player.score += Math.round(Math.max(points - guessTime, 0));
       }
 
@@ -239,11 +241,9 @@ export class Game {
   };
 
   endGame = () => {
-    this.updateState(States.GAME_END)
-    const winner = this.players.reduce((max, player) => 
-      player.score > max.score ? player: max
-    );
-    this.broadcast({type: ClientEvents.GAMEP_END, winner: winner.getPlayerInfo()});
+    this.updateState(States.GAME_END);
+    const winner = this.players.reduce((max, player) => (player.score > max.score ? player : max));
+    this.broadcast({ type: ClientEvents.GAMEP_END, winner: winner.getPlayerInfo() });
   };
 
   getGameDetails = () => {
