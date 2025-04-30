@@ -138,7 +138,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       myTurn,
       setMyTurn,
       timer,
-      setTimer
+      setTimer,
     };
   }, [
     socket,

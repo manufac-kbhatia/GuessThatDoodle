@@ -29,11 +29,11 @@ const GameScreen = () => {
           <Scoreboard />
         </div>
         {/* DrawingBoard */}
-        <div className="col-span-7">
+        <div className="col-span-8">
           <Drawboard />
         </div>
         {/* Chats */}
-        <div className="col-span-3 ">
+        <div className="col-span-2">
           <Chats />
         </div>
       </div>
