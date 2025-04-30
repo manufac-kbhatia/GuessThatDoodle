@@ -7,7 +7,7 @@ import Chats from "./Chats";
 import Drawboard from "./Drawboard";
 
 const GameScreen = () => {
-  const { gameState, game, me, socket } = useAppContext();
+  const { game, me, socket } = useAppContext();
 
   const handleStart = () => {
     if (!socket || !game) return;
@@ -36,7 +36,7 @@ const GameScreen = () => {
             <Chats />
           </div>
         </div>
-        {gameState.state === States.WAITING ? (
+        {game?.gameState.state === States.WAITING ? (
           <div className="flex bg-neutral-600 p-1 gap-1 text-white w-4xl rounded-md ">
             <button
               className=" flex-2/3 text-4xl bg-blue-400 rounded-md"

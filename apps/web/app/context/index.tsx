@@ -16,12 +16,6 @@ interface Context {
   setGame: Dispatch<SetStateAction<Game | null>>;
   me?: PlayerInfo;
   setMe: Dispatch<SetStateAction<PlayerInfo | undefined>>;
-  players: Player[];
-  setPlayers: Dispatch<SetStateAction<Player[]>>;
-  gameState: { state: State; currentRound: number };
-  setGameState: Dispatch<SetStateAction<{ state: State; currentRound: number }>>;
-  gameSettings?: GameSettings;
-  setGameSettings: Dispatch<SetStateAction<GameSettings | undefined>>;
   currentPlayer?: PlayerInfo;
   setCurrentPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>;
   words: string[];
@@ -40,13 +34,6 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [game, setGame] = useState<Game | null>(null);
   const [me, setMe] = useState<PlayerInfo>();
-
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [gameState, setGameState] = useState<{
-    state: State;
-    currentRound: number;
-  }>({ state: States.WAITING, currentRound: 0 });
-  const [gameSettings, setGameSettings] = useState<GameSettings>();
 
   const [currentPlayer, setCurrentPlayer] = useState<PlayerInfo>();
   const [myTurn, setMyTurn] = useState(false);
@@ -75,13 +62,13 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         const me = data.me as PlayerInfo;
         setGame(game);
         setMe(me);
-        setPlayers(game.players);
       }
 
       if (data.type === ClientEvents.PLAYER_JOINED) {
         const player = data.player as Player;
-        setPlayers((prev) => {
-          return [...prev, player];
+        setGame((prev) => {
+          if (!prev) return null;
+          return { ...prev, players: [...prev.players, player] };
         });
       }
 
@@ -92,9 +79,10 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
           setChoosenWord(null);
         }
         setCurrentPlayer(currentPlayer);
-        setGameState((prev) => {
-          return { ...prev, state: States.CHOOSING_WORD };
-        });
+        setGame((prev) => {
+          if(!prev) return null;
+          return {...prev, gameState: {...prev.gameState, state: States.CHOOSING_WORD}}
+        })
       }
 
       if (data.type === ClientEvents.CHOOSE_WORD) {
@@ -102,25 +90,28 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         setWords(words);
         setMyTurn(true);
         setCurrentPlayer(me);
-        setGameState((prev) => {
-          return { ...prev, state: States.CHOOSING_WORD };
+        setGame((prev) => {
+          if(!prev) return null;
+          return {...prev, gameState: {...prev.gameState, state: States.CHOOSING_WORD}}
         });
       }
 
       if (data.type === ClientEvents.CHOOSEN_WORD) {
         const word = data.word as string;
         setChoosenWord(word);
-        setGameState((prev) => {
-          return { ...prev, state: States.GUESS_WORD };
-        });
+        setGame((prev) => {
+          if(!prev) return null;
+          return {...prev, gameState: {...prev.gameState, state: States.GUESS_WORD}}
+        })
       }
 
       if (data.type === ClientEvents.GUESS_CHOOSEN_WORD) {
         const word = data.word as number[];
         setGuessWord(word);
-        setGameState((prev) => {
-          return { ...prev, state: States.GUESS_WORD };
-        });
+        setGame((prev) => {
+          if(!prev) return null;
+          return {...prev, gameState: {...prev.gameState, state: States.GUESS_WORD}}
+        })
       }
     };
   }, [me, socket]);
@@ -133,12 +124,6 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       setGame,
       me,
       setMe,
-      players,
-      setPlayers,
-      gameState,
-      setGameState,
-      gameSettings,
-      setGameSettings,
       currentPlayer,
       setCurrentPlayer,
       words,
@@ -157,12 +142,6 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
     setGame,
     me,
     setMe,
-    players,
-    setPlayers,
-    gameState,
-    setGameState,
-    gameSettings,
-    setGameSettings,
     currentPlayer,
     setCurrentPlayer,
     words,
