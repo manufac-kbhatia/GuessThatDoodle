@@ -4,10 +4,10 @@ import { States } from "@repo/common";
 import Image from "next/image";
 
 const GameHeader = () => {
-  const { gameState, myTurn, choosenWord, guessWord } = useAppContext();
+  const { game, myTurn, choosenWord, guessWord } = useAppContext();
 
   const guessTheWord =
-    gameState.state === States.GUESS_WORD && myTurn
+    game?.gameState.state === States.GUESS_WORD && myTurn
       ? choosenWord
       : guessWord.map((word) => "_ ".repeat(word).trim()).join("    ");
 
@@ -15,7 +15,7 @@ const GameHeader = () => {
     <div className="flex justify-between items-center p-4 backdrop-blur-md rounded-2xl">
       <div>Timer</div>
       <div className="flex flex-col gap-2 justify-center items-center text-2xl">
-        {gameState.state === States.GUESS_WORD ? (myTurn === true ? "Draw" : "Guess") : "Waiting"}
+        {game?.gameState.state === States.GUESS_WORD ? (myTurn === true ? "Draw" : "Guess") : "Waiting"}
         <div className="text-white">{guessTheWord}</div>
       </div>
 

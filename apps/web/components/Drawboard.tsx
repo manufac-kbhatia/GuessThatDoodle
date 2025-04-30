@@ -4,7 +4,7 @@ import { WordSelected, GameEvents, States } from "@repo/common";
 import CanvasBoard from "./CanvasBoard";
 
 const Drawboard = () => {
-  const { gameState, gameSettings, socket, currentPlayer, game, words, myTurn } = useAppContext();
+  const { socket, currentPlayer, game, words, myTurn } = useAppContext();
 
   const handleWordSelect = (word: string) => {
     if (!game || !currentPlayer || !socket) return;
@@ -18,9 +18,9 @@ const Drawboard = () => {
   return (
     <div className="bg-neutral-400 h-[70vh] rounded-2xl">
       {/* Settings */}
-      {gameState.state === States.WAITING ? <div>{JSON.stringify(gameSettings)}</div> : null}
+      {game?.gameState.state === States.WAITING ? <div>{JSON.stringify(game?.gameSettings)}</div> : null}
       {/* Choose Words */}
-      {gameState.state === States.CHOOSING_WORD && myTurn === true ? (
+      {game?.gameState.state === States.CHOOSING_WORD && myTurn === true ? (
         <div className="flex justify-center items-center w-full h-full gap-5">
           {words.map((word) => (
             <button
@@ -34,12 +34,12 @@ const Drawboard = () => {
         </div>
       ) : null}
       {/* Choosing Word */}
-      {gameState.state === States.CHOOSING_WORD && myTurn === false ? (
+      {game?.gameState.state === States.CHOOSING_WORD && myTurn === false ? (
         <div>{currentPlayer?.name} is choosing a word</div>
       ) : null}
 
       {/* Canvas draw board */}
-      {gameState.state === States.GUESS_WORD ? <CanvasBoard /> : null}
+      {game?.gameState.state === States.GUESS_WORD ? <CanvasBoard /> : null}
     </div>
   );
 };

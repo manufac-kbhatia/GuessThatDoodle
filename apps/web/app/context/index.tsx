@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { PropsWithChildren, JSX, Dispatch, SetStateAction } from "react";
 import { WS_URL } from "../utils";
-import { ClientEvents, State, States } from "@repo/common";
-import { Game, GameSettings, Player, PlayerInfo } from "@repo/common/types";
+import { ClientEvents, States } from "@repo/common";
+import { Game, Player, PlayerInfo } from "@repo/common/types";
 
 export interface Message {
   message: string;
