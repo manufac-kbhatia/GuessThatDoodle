@@ -2,6 +2,9 @@ import React from "react";
 import { useAppContext } from "../app/context";
 import { WordSelected, GameEvents, States } from "@repo/common";
 import CanvasBoard from "./CanvasBoard";
+import SettingOverlay from "./overlays/SettingOverlay";
+import WordSelectOverlay from "./overlays/WordSelectOverlay";
+import ChoosingWordOverlay from "./overlays/ChoosingWordOverlay";
 
 const Drawboard = () => {
   const { socket, currentPlayer, game, words, myTurn } = useAppContext();
@@ -16,28 +19,18 @@ const Drawboard = () => {
     socket.send(JSON.stringify(data));
   };
   return (
-    <div className="bg-neutral-400 h-[70vh] rounded-md">
+    <div className="relative bg-neutral-400 h-[70vh] rounded-md">
       {/* Settings */}
-      {game?.gameState.state === States.WAITING ? (
-        <div>{JSON.stringify(game?.gameSettings)}</div>
+      {game?.gameState.state === States.NOT_STARTED ? (
+        <SettingOverlay settings={game.gameSettings} />
       ) : null}
       {/* Choose Words */}
       {game?.gameState.state === States.CHOOSING_WORD && myTurn === true ? (
-        <div className="flex justify-center items-center w-full h-full gap-5">
-          {words.map((word) => (
-            <button
-              className="border-2 border-black w-16"
-              key={word}
-              onClick={() => handleWordSelect(word)}
-            >
-              {word}
-            </button>
-          ))}
-        </div>
+        <WordSelectOverlay words={words} onWordSelect={handleWordSelect} />
       ) : null}
       {/* Choosing Word */}
       {game?.gameState.state === States.CHOOSING_WORD && myTurn === false ? (
-        <div>{currentPlayer?.name} is choosing a word</div>
+        <ChoosingWordOverlay currentPlayer={currentPlayer} />
       ) : null}
 
       {/* Canvas draw board */}
