@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CreateGame, GameEvents, JoinGame } from "@repo/common";
 import { useSearchParams } from "next/navigation";
 import { useAppContext } from "../app/context";
+import Image from "next/image";
 
 const JoinGameScreen = () => {
   const { socket } = useAppContext();
@@ -48,7 +49,8 @@ const JoinGameScreen = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-screen flex flex-col justify-center items-center">
+      <Image src="/logo.gif" alt="Thumbs Up" width={700} height={200} className="object-contain pl-16" />
       <div className="flex flex-col gap-5 w-full max-w-md">
         {error === true ? <div className="text-red-600 font-bold">Please enter a name</div> : null}
         <input
