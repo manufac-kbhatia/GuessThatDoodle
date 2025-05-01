@@ -37,6 +37,7 @@ export const States = {
   CHOOSING_WORD: "CHOOSING WORD",
   GUESS_WORD: "GUESS",
   GAME_END: "GAME_END",
+  END_TURN: "END_TURN",
 } as const;
 
 export type State = (typeof States)[keyof typeof States];

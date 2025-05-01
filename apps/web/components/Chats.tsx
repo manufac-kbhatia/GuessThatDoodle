@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../app/context";
 import { ClientEvents, GameEvents, GuessWord } from "@repo/common";
 import { PlayerInfo } from "@repo/common/types";
@@ -11,6 +11,8 @@ const Chats = () => {
   const { socket, game } = useAppContext();
   const [chats, setChats] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
 
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!game || !socket) return;
@@ -45,9 +47,22 @@ const Chats = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      const lastMessage = containerRef.current.lastElementChild;
+      if (lastMessage) {
+        const scrollOptions: ScrollIntoViewOptions = {
+          behavior: "smooth",
+          block: "end",
+        };
+        lastMessage.scrollIntoView(scrollOptions);
+      }
+    }
+  }, [chats]);
+
   return (
-    <div className="flex flex-col bg-white h-full justify-between overflow-hidden rounded-md">
-      <div className="flex-1">
+    <div className="flex flex-col bg-white h-full justify-between rounded-md">
+      <div className="flex-1 overflow-scroll max-h-[60vh]" ref={containerRef}>
         {chats.map((chat, index) => (
           <div
             key={index}

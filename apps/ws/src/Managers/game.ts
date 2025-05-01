@@ -91,7 +91,6 @@ export class Game {
 
     // Run a timer to select a random word if a word is not selected within give time: wordSelectTime
     const timer = setTimeout(() => {
-      if (this.gameState.word !== "") return;
       const randomWord = words[Math.floor(Math.random() * words.length)] as string;
       this.wordSelected(currentPlayerToDraw, randomWord);
     }, this.gameSettings.wordSelectTime * 1000);
@@ -105,6 +104,7 @@ export class Game {
 
     // Clear the running timer and set the word
     this.clearTimer();
+    this.gameState.state = States.GUESS_WORD;
     this.gameState.word = word;
     this.gameState.timerStartedAt = new Date();
 
@@ -164,9 +164,9 @@ export class Game {
 
     // Check if all players except the current player ,have guessed
     const allPlayersGuessed = this.players.every(
-      (player) => player.id !== currentPlayer?.id && player.guessed === true,
+      (player) => player.guessed || player.id === currentPlayer?.id,
     );
-    if (allPlayersGuessed === true) {
+    if (allPlayersGuessed === true) {3
       this.endTurn();
     }
   };
@@ -199,6 +199,7 @@ export class Game {
     // Clear the timer of the game
     this.clearTimer();
     this.givePoints();
+    this.gameState.state = States.END_TURN;
     this.gameState.currentPlayer += 1;
 
     if (this.gameState.currentPlayer === this.players.length) {
@@ -207,15 +208,20 @@ export class Game {
     }
 
     const endRoundTime = 5; // This means that the next round or turn will start after 5 seconds.
-    this.broadcast({
-      type: ClientEvents.TURN_END,
-      word: this.gameState.word,
-      time: endRoundTime,
-      players: this.players,
-    });
+      this.broadcast({
+        type: ClientEvents.TURN_END,
+        word: this.gameState.word,
+        players: this.players.map((player) => player.getPlayer()),
+        currentRound: this.gameState.currentRound,
+      });
+
 
     this.gameState.word = "";
     this.gameState.state = States.CHOOSING_WORD;
+    this.players.forEach((player) => {
+      player.guessed = false;
+      player.guessedAt = null;
+    })
 
     // play next turn
     setTimeout(() => {

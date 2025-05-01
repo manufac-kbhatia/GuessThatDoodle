@@ -5,13 +5,18 @@ import Image from "next/image";
 
 const GameHeader = () => {
   const { game, myTurn, choosenWord, guessWord, timer } = useAppContext();
-
   const [time, setTime] = useState(timer);
 
   const guessTheWord =
     game?.gameState.state === States.GUESS_WORD && myTurn
       ? choosenWord
       : guessWord.map((word) => "_ ".repeat(word).trim()).join("    ");
+
+  console.log(guessTheWord);
+
+  useEffect(() => {
+    setTime(timer);
+  }, [timer]);
 
   useEffect(() => {
     if (time <= 0) return;
@@ -46,7 +51,7 @@ const GameHeader = () => {
             ? "Draw"
             : "Guess"
           : "Waiting"}
-        <div className="text-white">{guessTheWord}</div>
+        <div className="text-black">{guessTheWord}</div>
       </div>
 
       <div className="flex">

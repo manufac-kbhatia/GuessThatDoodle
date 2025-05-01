@@ -28,6 +28,8 @@ interface Context {
   setMyTurn: Dispatch<SetStateAction<boolean>>;
   timer: number;
   setTimer: Dispatch<SetStateAction<number>>;
+  winner?: PlayerInfo;
+  setWinner: Dispatch<SetStateAction<PlayerInfo | undefined>>;
 }
 
 const ContextInstance = createContext<Context | undefined>(undefined);
@@ -37,12 +39,13 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
   const [game, setGame] = useState<Game | null>(null);
   const [me, setMe] = useState<PlayerInfo>();
   const [timer, setTimer] = useState(0);
+  const [winner, setWinner] = useState<PlayerInfo>();
 
   const [currentPlayer, setCurrentPlayer] = useState<PlayerInfo>();
   const [myTurn, setMyTurn] = useState(false);
-  const [words, setWords] = useState<string[]>([]);
-  const [choosenWord, setChoosenWord] = useState<string | null>(null);
-  const [guessWord, setGuessWord] = useState<number[]>([]);
+  const [words, setWords] = useState<string[]>([]); // arrays of words from which the word has to be selected
+  const [choosenWord, setChoosenWord] = useState<string | null>(null); // the selected word
+  const [guessWord, setGuessWord] = useState<number[]>([]); // array of lenght of each word present in choosen word
 
   useEffect(() => {
     const socket = new WebSocket(WS_URL);
@@ -77,19 +80,21 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
 
       if (data.type === ClientEvents.CHOOSING_WORD) {
         const currentPlayer = data.player as PlayerInfo;
-        if (currentPlayer.id === me?.id) {
-          setMyTurn(false);
-          setChoosenWord(null);
-        }
+        setMyTurn(false);
+        setChoosenWord(null);
+        setWords([]);
+
         setCurrentPlayer(currentPlayer);
         setGame((prev) => {
           if (!prev) return null;
           return { ...prev, gameState: { ...prev.gameState, state: States.CHOOSING_WORD } };
         });
+        setTimer(data.time as number);
       }
 
       if (data.type === ClientEvents.CHOOSE_WORD) {
         const words = data.words as string[];
+        setChoosenWord(null);
         setWords(words);
         setMyTurn(true);
         setCurrentPlayer(me);
@@ -97,6 +102,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
           if (!prev) return null;
           return { ...prev, gameState: { ...prev.gameState, state: States.CHOOSING_WORD } };
         });
+        setTimer(data.time as number);
       }
 
       if (data.type === ClientEvents.CHOOSEN_WORD) {
@@ -106,6 +112,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
           if (!prev) return null;
           return { ...prev, gameState: { ...prev.gameState, state: States.GUESS_WORD } };
         });
+        setTimer(data.time as number);
       }
 
       if (data.type === ClientEvents.GUESS_CHOOSEN_WORD) {
@@ -114,6 +121,29 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         setGame((prev) => {
           if (!prev) return null;
           return { ...prev, gameState: { ...prev.gameState, state: States.GUESS_WORD } };
+        });
+        setTimer(data.time as number);
+      }
+
+      if (data.type === ClientEvents.TURN_END) {
+        const players = data.players as Player[]; // players with updated score
+        const word = data.word as string; // word which was selected
+        const currentRound = data.currentRound as number; // new round
+        setChoosenWord(word);
+        setGame((prev) => {
+          if (!prev) return null;
+          return { ...prev, players, gameState: { currentRound, state: States.END_TURN } };
+        });
+        setMyTurn(false);
+        setTimer(0);
+      }
+
+      if (data.type === ClientEvents.GAMEP_END) {
+        const winner = data.winner as PlayerInfo;
+        setWinner(winner);
+        setGame((prev) => {
+          if (!prev) return null;
+          return { ...prev, gameState: { currentRound: 0, state: States.GAME_END } };
         });
       }
     };
@@ -139,6 +169,8 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       setMyTurn,
       timer,
       setTimer,
+      winner,
+      setWinner
     };
   }, [
     socket,
@@ -159,6 +191,8 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
     setMyTurn,
     timer,
     setTimer,
+    winner,
+    setWinner
   ]);
 
   return <ContextInstance.Provider value={contextValue}>{children}</ContextInstance.Provider>;

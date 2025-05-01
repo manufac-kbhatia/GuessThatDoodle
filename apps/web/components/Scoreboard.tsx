@@ -9,7 +9,7 @@ const Scoreboard = () => {
         return (
           <div key={player.id} className={`p-1 ${index % 2 === 0 ? "bg-white" : "bg-neutral-200"}`}>
             <div>
-              {player.name} {game?.creator.id === player.id ? <>(Admin)</> : null}{" "}
+              {player.name}
               {player.id === me?.id ? <>(You)</> : null}
             </div>
             <div>Score: {player.score}</div>

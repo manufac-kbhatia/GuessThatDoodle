@@ -5,9 +5,11 @@ import CanvasBoard from "./CanvasBoard";
 import SettingOverlay from "./overlays/SettingOverlay";
 import WordSelectOverlay from "./overlays/WordSelectOverlay";
 import ChoosingWordOverlay from "./overlays/ChoosingWordOverlay";
+import EndTurnOverlay from "./overlays/EndTurnOverlay";
+import WinnerOverlay from "./overlays/WinnerOverlay";
 
 const Drawboard = () => {
-  const { socket, currentPlayer, game, words, myTurn } = useAppContext();
+  const { socket, currentPlayer, game, words, myTurn, choosenWord, winner } = useAppContext();
 
   const handleWordSelect = (word: string) => {
     if (!game || !currentPlayer || !socket) return;
@@ -31,6 +33,13 @@ const Drawboard = () => {
       {/* Choosing Word */}
       {game?.gameState.state === States.CHOOSING_WORD && myTurn === false ? (
         <ChoosingWordOverlay currentPlayer={currentPlayer} />
+      ) : null}
+      {/* Turn Ends */}
+      {game?.gameState.state === States.END_TURN && choosenWord ? (
+        <EndTurnOverlay choosenWord={choosenWord} players={game.players} />
+      ) : null}
+      {game?.gameState.state === States.GAME_END && winner ? (
+        <WinnerOverlay winner={winner} />
       ) : null}
 
       {/* Canvas draw board */}
