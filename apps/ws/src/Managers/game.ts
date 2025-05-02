@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { Player } from "./player";
 import { DrawData, GameSettings, GameState, Game as GameType } from "@repo/common/types";
 import { ClientEvents, State, States } from "@repo/common";
+import { getWords } from "../utils";
 
 export class Game {
   public gameId: string;
@@ -72,7 +73,7 @@ export class Game {
     if (!currentPlayerToDraw) return;
 
     // send the words to current player for selecting one of them
-    const words = ["Bee", "MasterChef", "Pussy Cat"];
+    const words = getWords();
     currentPlayerToDraw.send({
       type: ClientEvents.CHOOSE_WORD,
       words,
