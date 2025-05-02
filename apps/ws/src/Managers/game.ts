@@ -163,10 +163,9 @@ export class Game {
     });
 
     // Check if all players except the current player ,have guessed
-    const allPlayersGuessed = this.players.every(
-      (player) => player.guessed || player.id === currentPlayer?.id,
-    );
-    if (allPlayersGuessed === true) {3
+    const allPlayersGuessed = this.players.every((player) => player.guessed || player.id === currentPlayer?.id);
+    if (allPlayersGuessed === true) {
+      3;
       this.endTurn();
     }
   };
@@ -208,20 +207,19 @@ export class Game {
     }
 
     const endRoundTime = 5; // This means that the next round or turn will start after 5 seconds.
-      this.broadcast({
-        type: ClientEvents.TURN_END,
-        word: this.gameState.word,
-        players: this.players.map((player) => player.getPlayer()),
-        currentRound: this.gameState.currentRound,
-      });
-
+    this.broadcast({
+      type: ClientEvents.TURN_END,
+      word: this.gameState.word,
+      players: this.players.map((player) => player.getPlayer()),
+      currentRound: this.gameState.currentRound,
+    });
 
     this.gameState.word = "";
     this.gameState.state = States.CHOOSING_WORD;
     this.players.forEach((player) => {
       player.guessed = false;
       player.guessedAt = null;
-    })
+    });
 
     // play next turn
     setTimeout(() => {

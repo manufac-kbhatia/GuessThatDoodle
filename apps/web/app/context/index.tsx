@@ -170,7 +170,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       timer,
       setTimer,
       winner,
-      setWinner
+      setWinner,
     };
   }, [
     socket,
@@ -192,7 +192,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
     timer,
     setTimer,
     winner,
-    setWinner
+    setWinner,
   ]);
 
   return <ContextInstance.Provider value={contextValue}>{children}</ContextInstance.Provider>;

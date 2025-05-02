@@ -13,7 +13,6 @@ const Chats = () => {
   const [message, setMessage] = useState<string>("");
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!game || !socket) return;
     if (event.key === "Enter" && message.length > 0) {

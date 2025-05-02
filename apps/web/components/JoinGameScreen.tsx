@@ -5,12 +5,15 @@ import { CreateGame, GameEvents, JoinGame } from "@repo/common";
 import { useSearchParams } from "next/navigation";
 import { useAppContext } from "../app/context";
 import Image from "next/image";
+import SelectAvatar from "./SelectAvatar/SelectAvatar";
 
 const JoinGameScreen = () => {
   const { socket } = useAppContext();
   const [name, setName] = useState("");
   const [error, setError] = useState<boolean | null>(null);
   const params = useSearchParams();
+
+  const [avatarCoordinate, setAvatarCoordinates] = useState({ x: 0, y: 0 });
 
   const handleCreateGame = () => {
     if (name.length === 0) {
@@ -50,7 +53,13 @@ const JoinGameScreen = () => {
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
-      <Image src="/logo.gif" alt="Thumbs Up" width={700} height={200} className="object-contain pl-16" />
+      <Image
+        src="/logo.gif"
+        alt="Thumbs Up"
+        width={700}
+        height={200}
+        className="object-contain pl-16"
+      />
       <div className="flex flex-col gap-5 w-full max-w-md">
         {error === true ? <div className="text-red-600 font-bold">Please enter a name</div> : null}
         <input
@@ -60,7 +69,7 @@ const JoinGameScreen = () => {
           onChange={(e) => setName(e.currentTarget.value)}
           className="p-2 text-4xl bg-white rounded-md"
         />
-        <div className="grid grid-cols-4 border-2 border-red-900 h-40"></div>
+        <SelectAvatar />
         <button className="text-4xl text-white bg-blue-400 rounded-md" onClick={handlePlay}>
           Play!
         </button>
