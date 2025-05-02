@@ -1,17 +1,9 @@
+import { Coordinate } from "@repo/common/types";
 import React from "react";
 export interface AvatarType {
-  avatarCoordinate: {
-    x: number;
-    y: number;
-  };
-  eyesCoordinate: {
-    x: number;
-    y: number;
-  };
-  mouthCoordinate: {
-    x: number;
-    y: number;
-  };
+  avatarCoordinate: Coordinate;
+  eyesCoordinate: Coordinate;
+  mouthCoordinate: Coordinate;
 }
 const Avatar = ({ avatarCoordinate, eyesCoordinate, mouthCoordinate }: AvatarType) => {
   return (

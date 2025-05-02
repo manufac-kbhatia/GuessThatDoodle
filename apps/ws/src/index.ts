@@ -38,8 +38,8 @@ wss.on("connection", function connection(ws) {
 
     // create the game
     if (type === GameEvents.CREATE_GAME) {
-      const { playerName } = data as CreateGame;
-      const creator = new Player(ws, playerName);
+      const { playerName, avatarBody } = data as CreateGame;
+      const creator = new Player(ws, playerName, avatarBody);
       const game = new Game(creator);
       clients.set(ws, creator);
       games.set(game.gameId, game);
@@ -53,8 +53,8 @@ wss.on("connection", function connection(ws) {
 
     // join the game
     if (type === GameEvents.JOIN_GAME) {
-      const { playerName, gameId } = data as JoinGame;
-      const newPlayer = new Player(ws, playerName);
+      const { playerName, gameId, avatarBody } = data as JoinGame;
+      const newPlayer = new Player(ws, playerName, avatarBody);
       clients.set(ws, newPlayer);
       const game = games.get(gameId);
       if (!game) return;

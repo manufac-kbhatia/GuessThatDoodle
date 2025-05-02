@@ -12,6 +12,7 @@ export interface Player {
   name: string;
   guessed: boolean;
   score: number;
+  avatarBody: Coordinate[];
 }
 
 export interface DrawData {
@@ -51,4 +52,9 @@ export interface Game {
 export interface PlayerInfo {
   id: string;
   name: string;
+}
+
+export interface Coordinate {
+  x: number;
+  y: number;
 }

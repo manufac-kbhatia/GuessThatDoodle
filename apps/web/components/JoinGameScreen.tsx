@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useAppContext } from "../app/context";
 import Image from "next/image";
 import SelectAvatar from "./SelectAvatar/SelectAvatar";
+import { Coordinate } from "@repo/common/types";
 
 const JoinGameScreen = () => {
   const { socket } = useAppContext();
@@ -13,7 +14,9 @@ const JoinGameScreen = () => {
   const [error, setError] = useState<boolean | null>(null);
   const params = useSearchParams();
 
-  const [avatarCoordinate, setAvatarCoordinates] = useState({ x: 0, y: 0 });
+  const [avatarCoordinate, setAvatarCoordinate] = useState<Coordinate>({ x: 0, y: 0 });
+  const [eyesCoordinate, setEyesCoordinate] = useState<Coordinate>({ x: 0, y: 0 });
+  const [mouthCoordinate, setMouthCoordinate] = useState<Coordinate>({ x: 0, y: 0 });
 
   const handleCreateGame = () => {
     if (name.length === 0) {
@@ -25,6 +28,7 @@ const JoinGameScreen = () => {
     const data: CreateGame = {
       type: GameEvents.CREATE_GAME,
       playerName: name,
+      avatarBody: [avatarCoordinate, eyesCoordinate, mouthCoordinate],
     };
     socket?.send(JSON.stringify(data));
   };
@@ -45,6 +49,7 @@ const JoinGameScreen = () => {
           gameId,
           playerName: name,
           type: GameEvents.JOIN_GAME,
+          avatarBody: [avatarCoordinate, eyesCoordinate, mouthCoordinate],
         };
         socket.send(JSON.stringify(data));
       }
@@ -69,7 +74,14 @@ const JoinGameScreen = () => {
           onChange={(e) => setName(e.currentTarget.value)}
           className="p-2 text-4xl bg-white rounded-md"
         />
-        <SelectAvatar />
+        <SelectAvatar
+          avatarCoordinate={avatarCoordinate}
+          mouthCoordinate={mouthCoordinate}
+          eyesCoordinate={eyesCoordinate}
+          setAvatarCoordinate={setAvatarCoordinate}
+          setEyesCoordinate={setEyesCoordinate}
+          setMouthCoordinate={setMouthCoordinate}
+        />
         <button className="text-4xl text-white bg-blue-400 rounded-md" onClick={handlePlay}>
           Play!
         </button>

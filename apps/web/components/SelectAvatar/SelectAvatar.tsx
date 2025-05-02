@@ -1,14 +1,25 @@
-import React, { useState } from "react";
 import RightButton from "./RightButton";
 import LeftButton from "./LeftButton";
 import Dice from "./Dice";
 import Avatar from "../Avatar";
+import { Coordinate } from "@repo/common/types";
 
-const SelectAvatar = () => {
-  const [avatarCoordinate, setAvatarCoordinate] = useState({ x: 0, y: 0 });
-  const [eyesCoordinate, setEyesCoordinate] = useState({ x: 0, y: 0 });
-  const [mouthCoordinate, setMouthCoordinate] = useState({ x: 0, y: 0 });
-
+export interface AvatarType {
+  avatarCoordinate: Coordinate;
+  setAvatarCoordinate: React.Dispatch<React.SetStateAction<Coordinate>>;
+  eyesCoordinate: Coordinate;
+  setEyesCoordinate: React.Dispatch<React.SetStateAction<Coordinate>>;
+  mouthCoordinate: Coordinate;
+  setMouthCoordinate: React.Dispatch<React.SetStateAction<Coordinate>>;
+}
+const SelectAvatar = ({
+  avatarCoordinate,
+  setAvatarCoordinate,
+  eyesCoordinate,
+  setEyesCoordinate,
+  mouthCoordinate,
+  setMouthCoordinate,
+}: AvatarType) => {
   const handleNextAvatar = () => {
     if (avatarCoordinate.x >= 7 && avatarCoordinate.y === 2) {
       setAvatarCoordinate({ x: 0, y: 0 });
@@ -96,23 +107,22 @@ const SelectAvatar = () => {
   function getPosition(m: number, random: number) {
     const row = Math.floor(random / m);
     const col = random % m;
-    return { y:row, x:col };
+    return { y: row, x: col };
   }
-  
 
   const handleRandomClick = () => {
     const randomEyes = Math.floor(Math.random() * 57);
     const randomMouth = Math.floor(Math.random() * 51);
     const randomAvatar = Math.floor(Math.random() * 28);
 
-    const eyes = getPosition(10, randomEyes)
-    const mouth = getPosition(10,  randomMouth)
-    const avatar = getPosition(10, randomAvatar)
+    const eyes = getPosition(10, randomEyes);
+    const mouth = getPosition(10, randomMouth);
+    const avatar = getPosition(10, randomAvatar);
 
     setEyesCoordinate(eyes);
     setAvatarCoordinate(avatar);
     setMouthCoordinate(mouth);
-  }
+  };
   return (
     <div className="flex justify-center items-center p-4 backdrop-blur-sm">
       <div className="relative w-[5vh] h-[15vh]">

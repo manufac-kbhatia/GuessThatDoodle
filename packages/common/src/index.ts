@@ -54,11 +54,27 @@ export const BasePayload = z.object({
 
 export const CreateGameSchema = BasePayload.extend({
   playerName: z.string().min(5, { message: "Please provide name of atleat 5 characters" }),
+  avatarBody: z
+    .array(
+      z.object({
+        x: z.number(),
+        y: z.number(),
+      }),
+    )
+    .length(3),
 });
 
 export const JoinGameSchema = BasePayload.extend({
   gameId: z.string(),
   playerName: z.string().min(5, { message: "Please provide name of atleat 5 characters" }),
+  avatarBody: z
+    .array(
+      z.object({
+        x: z.number(),
+        y: z.number(),
+      }),
+    )
+    .length(3),
 });
 
 export const StartGameSchema = BasePayload.extend({

@@ -1,22 +1,24 @@
 import { WebSocket } from "ws";
 import { randomUUID } from "crypto";
-import { PlayerInfo, Player as PlayerType } from "@repo/common/types";
+import { Coordinate, PlayerInfo, Player as PlayerType } from "@repo/common/types";
 import { ClientEvents } from "@repo/common";
 export class Player {
   public id: string;
   public name: string;
+  public avatarBody: Coordinate[];
   public ws: WebSocket;
   public guessed: boolean;
   public guessedAt: Date | null;
   public score: number;
 
-  constructor(ws: WebSocket, name: string) {
+  constructor(ws: WebSocket, name: string, avatarBody: Coordinate[]) {
     this.id = randomUUID();
     this.ws = ws;
     this.name = name;
     this.guessed = false;
     this.guessedAt = null;
     this.score = 0;
+    this.avatarBody = avatarBody;
   }
 
   getPlayer = () => {
@@ -25,6 +27,7 @@ export class Player {
       name: this.name,
       score: this.score,
       guessed: this.guessed,
+      avatarBody: this.avatarBody,
     };
     return player;
   };
