@@ -11,6 +11,7 @@ import {
   DrawingData,
   GuessWord,
   ClientEvents,
+  ClearBoard,
 } from "@repo/common";
 import { Player } from "./managers/PlayerClass";
 import { Game } from "./managers/GameClass";
@@ -72,6 +73,7 @@ wss.on("connection", function connection(ws) {
       game.startGame(player);
     }
 
+    // word selected
     if (type === GameEvents.WORD_SELECTED) {
       const { word, gameId } = data as WordSelected;
       const game = games.get(gameId);
@@ -79,6 +81,7 @@ wss.on("connection", function connection(ws) {
       game.wordSelected(player, word);
     }
 
+    // Drawing
     if (type === GameEvents.DRAW) {
       const { drawData, gameId } = data as DrawingData;
       const game = games.get(gameId);
@@ -86,11 +89,19 @@ wss.on("connection", function connection(ws) {
       game.drawing(player, drawData);
     }
 
+    // guess the word
     if (type === GameEvents.GUESS) {
       const { guessedWord, gameId } = data as GuessWord;
       const game = games.get(gameId);
       if (!game) return;
       game.guessWord(player, guessedWord);
+    }
+
+    if (type === GameEvents.CLEAR) {
+      const { gameId } = data as ClearBoard;
+      const game = games.get(gameId);
+      if (!game) return;
+      game.clearBoard(player);
     }
   });
 });

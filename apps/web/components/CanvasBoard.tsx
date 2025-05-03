@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { swatchColors } from "../app/utils/swatches";
 import { DrawData } from "@repo/common/types";
 import { useAppContext } from "../app/context";
-import { ClientEvents, DrawingData, GameEvents } from "@repo/common";
+import { ClearBoard, ClientEvents, DrawingData, GameEvents } from "@repo/common";
 
 const CanvasBoard = () => {
   const { socket, myTurn, game, me } = useAppContext();
@@ -133,16 +133,33 @@ const CanvasBoard = () => {
     }
   }
 
+  const handleClear = () => {
+    if(!socket || !game) return;
+    const data: ClearBoard = {type: GameEvents.CLEAR, gameId: game.gameId}
+    socket.send(JSON.stringify(data));
+    clearCanvas();
+  }
+
   useEffect(() => {
     if (!socket) return;
-    socket.addEventListener("message", (event) => {
+  
+    const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
       if (data.type === ClientEvents.DRAW && myTurn === false) {
         const drawingData = data.drawData as DrawData;
         revieveDrawData(drawingData);
       }
-    });
-  });
+      else if (data.type === ClientEvents.CLEAR) {
+        clearCanvas()
+      }
+    };
+  
+    socket.addEventListener("message", handleMessage);
+    return () => {
+      socket.removeEventListener("message", handleMessage);
+    };
+  }, [socket, myTurn]);
+  
 
   return (
     <div className="flex flex-col gap-4 h-full">
@@ -190,7 +207,7 @@ const CanvasBoard = () => {
               }}
             />
           </div>
-          <IconTrash size={30} onClick={clearCanvas} className="cursor-pointer" />
+          <IconTrash size={30} onClick={handleClear} className="cursor-pointer" />
         </div>
       ) : null}
     </div>

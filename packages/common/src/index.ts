@@ -9,6 +9,7 @@ export const GameEvents = {
   WORD_SELECTED: "WORD_SELECTED",
   DRAW: "DRAW",
   GUESS: "GUESS",
+  CLEAR: "CLEAR",
 } as const;
 
 export const ClientEvents = {
@@ -21,6 +22,7 @@ export const ClientEvents = {
   CHOOSEN_WORD: "CHOOSEN_WORD",
   GUESS_CHOOSEN_WORD: "GUESS_CHOOSEN_WORD",
   DRAW: "DRAW",
+  CLEAR: "CLEAR",
   GUESS: "GUESS",
   TURN_END: "TURN_END",
   GAMEP_END: "GAMEP_END",
@@ -106,6 +108,10 @@ export const DrawingSchema = BasePayload.extend({
   }),
 });
 
+export const ClearBoardSchema = BasePayload.extend({
+  gameId: z.string(),
+});
+
 export const ZodParsers: Record<GameEvent, ZodObject<ZodRawShape>> = {
   [GameEvents.CREATE_GAME]: CreateGameSchema,
   [GameEvents.JOIN_GAME]: JoinGameSchema,
@@ -113,6 +119,7 @@ export const ZodParsers: Record<GameEvent, ZodObject<ZodRawShape>> = {
   [GameEvents.WORD_SELECTED]: WordSelectedSchema,
   [GameEvents.DRAW]: DrawingSchema,
   [GameEvents.GUESS]: GuessWordSchema,
+  [GameEvents.CLEAR]: ClearBoardSchema,
 
   [GameEvents.END_GAME]: StartGameSchema,
   [GameEvents.LEAVE_GAME]: StartGameSchema,
@@ -125,3 +132,4 @@ export type StartGame = z.infer<typeof StartGameSchema>;
 export type WordSelected = z.infer<typeof WordSelectedSchema>;
 export type GuessWord = z.infer<typeof GuessWordSchema>;
 export type DrawingData = z.infer<typeof DrawingSchema>;
+export type ClearBoard = z.infer<typeof ClearBoardSchema>;

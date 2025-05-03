@@ -154,7 +154,7 @@ export class Game {
     if (guessedWord.toLowerCase() === this.gameState.word?.toLowerCase() && player.guessed === false) {
       player.guessed = true;
       player.guessedAt = new Date();
-      message = `${player.name} guesses right`;
+      message = "guessed the word!";
     }
 
     this.broadcast({
@@ -185,6 +185,8 @@ export class Game {
       return;
     }
 
+    this.gameState.drawData.push(drawData);
+
     // send updated drawing
     this.broadcast(
       {
@@ -194,6 +196,27 @@ export class Game {
       player,
     );
   };
+
+  clearBoard = (player: Player) => {
+    if (this.gameState.state !== States.GUESS_WORD) {
+      player.sendError("You are not allowed to draw at this moment");
+      return;
+    }
+
+    const currentPlayerToDraw = this.players[this.gameState.currentPlayer];
+    if (!currentPlayerToDraw) return;
+    if (player.id !== currentPlayerToDraw.id) {
+      player.sendError("It's not your turn to draw right now");
+      return;
+    }
+    this.gameState.drawData = [];
+    this.broadcast(
+      {
+        type: ClientEvents.CLEAR,
+      },
+      player,
+    );
+  }
 
   endTurn = () => {
     // Clear the timer of the game
