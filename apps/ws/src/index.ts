@@ -12,8 +12,9 @@ import {
   GuessWord,
   ClientEvents,
 } from "@repo/common";
-import { Player } from "./managers/player";
-import { Game } from "./managers/game";
+import { Player } from "./managers/PlayerClass";
+import { Game } from "./managers/GameClass";
+
 
 const wss = new WebSocketServer({ port: 8080 });
 

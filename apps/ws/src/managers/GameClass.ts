@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { Player } from "./player";
+import { Player } from "./PlayerClass";
 import { DrawData, GameSettings, GameState, Game as GameType } from "@repo/common/types";
 import { ClientEvents, State, States } from "@repo/common";
 import { getWords } from "../utils";
