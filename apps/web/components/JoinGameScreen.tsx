@@ -19,6 +19,7 @@ const JoinGameScreen = () => {
   const [mouthCoordinate, setMouthCoordinate] = useState<Coordinate>({ x: 0, y: 0 });
 
   const handleCreateGame = () => {
+    if (!socket) return;
     if (name.length === 0) {
       setError(true);
       return;
@@ -30,7 +31,7 @@ const JoinGameScreen = () => {
       playerName: name,
       avatarBody: [avatarCoordinate, eyesCoordinate, mouthCoordinate],
     };
-    socket?.send(JSON.stringify(data));
+    socket.send(JSON.stringify(data));
   };
 
   const handlePlay = () => {
