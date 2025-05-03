@@ -15,8 +15,6 @@ RUN npm install
 # Expose port for the ws app
 EXPOSE 8080
 
-WORKDIR /usr/src/app/apps/ws
-
 # Build and start the ws app
 RUN npm run build 
 CMD ["npm", "run", "start:websocket"]
