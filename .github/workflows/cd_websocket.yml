@@ -23,13 +23,13 @@ jobs:
           context: .
           file: ./docker/Dockerfile.ws
           push: true
-          tags: kunal3256/guessThatDoodle-server:${{ github.sha }}
+          tags: kunal3256/guessthatdoodle-server:${{ github.sha }}
 
       - name: Deploy to the VM
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
           chmod 700 ~/ssh_key
           ssh -o StrictHostKeyChecking=no -i ~/ssh_key ubuntu@15.207.221.137 -t "
-            sudo docker run --name guessThatDoodle-server -d -p 8080:8080 \
-            kunal3256/guessThatDoodle-server:${{ github.sha }}
+            sudo docker run --name guessthatdoodle-server -d -p 8080:8080 \
+            kunal3256/guessthatdoodle-server:${{ github.sha }}
           "
