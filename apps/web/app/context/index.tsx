@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { PropsWithChildren, JSX, Dispatch, SetStateAction } from "react";
 import { WS_URL } from "../utils";

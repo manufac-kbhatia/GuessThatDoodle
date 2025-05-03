@@ -15,7 +15,6 @@ import {
 import { Player } from "./managers/PlayerClass";
 import { Game } from "./managers/GameClass";
 
-
 const wss = new WebSocketServer({ port: 8080 });
 
 const clients = new Map<WebSocket, Player>();

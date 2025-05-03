@@ -38,8 +38,7 @@ const JoinGameScreen = () => {
     if (name.length === 0) {
       setError(true);
       return;
-    }
-    else if(name.length < 4) {
+    } else if (name.length < 4) {
       setError(true);
       return;
     }
@@ -57,7 +56,7 @@ const JoinGameScreen = () => {
         };
         socket.send(JSON.stringify(data));
       }
-    } 
+    }
   };
 
   return (
@@ -70,7 +69,11 @@ const JoinGameScreen = () => {
         className="object-contain pl-16"
       />
       <div className="flex flex-col gap-5 w-full max-w-md">
-        {error === true ? <div className=" text-xl bg-red-500 p-1 rounded-md text-white font-bold">Please enter a name with atleat 4 characters!</div> : null}
+        {error === true ? (
+          <div className=" text-xl bg-red-500 p-1 rounded-md text-white font-bold">
+            Please enter a name with atleat 4 characters!
+          </div>
+        ) : null}
         <input
           type="text"
           placeholder="Enter your name"
@@ -86,10 +89,16 @@ const JoinGameScreen = () => {
           setEyesCoordinate={setEyesCoordinate}
           setMouthCoordinate={setMouthCoordinate}
         />
-        <button className="text-4xl text-white bg-blue-400 rounded-md transition active:scale-95 cursor-pointer" onClick={handlePlay}>
+        <button
+          className="text-4xl text-white bg-blue-400 rounded-md transition active:scale-95 cursor-pointer"
+          onClick={handlePlay}
+        >
           Play!
         </button>
-        <button onClick={handleCreateGame} className="text-4xl text-white bg-green-400 rounded-md transition active:scale-95 cursor-pointer">
+        <button
+          onClick={handleCreateGame}
+          className="text-4xl text-white bg-green-400 rounded-md transition active:scale-95 cursor-pointer"
+        >
           Create Game
         </button>
       </div>
