@@ -13,7 +13,7 @@ const Scoreboard = () => {
         const mouthCoordinate = player.avatarBody[2] ?? { x: 0, y: 0 };
         return (
           <div key={player.id} className={`p-1 ${index % 2 === 0 ? "bg-white" : "bg-neutral-200"}`}>
-            <div className="flex justify-around">
+            <div className="flex gap-2">
               <div className="relative w-[5vh] h-[5vh]">
                 <Avatar
                   avatarCoordinate={avatarCoordinate}
@@ -22,11 +22,10 @@ const Scoreboard = () => {
                 />
               </div>
               <div>
-                {player.name} {"  "}
-                {player.id === me?.id ? <>(You)</> : null}
+                <div>{player.name} {player.id === me?.id ? <>(You)</> : null}</div>
                 <div>Score: {player.score}</div>
               </div>
-              {currentPlayer?.id === me?.id ? (
+              {currentPlayer?.id === player?.id ? (
                 <div className="w-5 h-5 relative">
                   <Image src="/pencil.gif" alt="Thumbs Down" fill className="object-contain" />
                 </div>

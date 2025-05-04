@@ -1,11 +1,11 @@
 name: Deploy the websocket-server
 on:
   push:
+    branches:
+      - main
     paths:
       - "apps/ws/**"
       - "packages/**"
-    branches:
-      - main
 
 jobs:
   build:
