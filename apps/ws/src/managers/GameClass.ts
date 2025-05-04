@@ -216,7 +216,7 @@ export class Game {
       },
       player,
     );
-  }
+  };
 
   endTurn = () => {
     // Clear the timer of the game

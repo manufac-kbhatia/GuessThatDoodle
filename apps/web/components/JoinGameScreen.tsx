@@ -7,6 +7,45 @@ import { useAppContext } from "../app/context";
 import Image from "next/image";
 import SelectAvatar from "./SelectAvatar/SelectAvatar";
 import { Coordinate } from "@repo/common/types";
+import Avatar from "./Avatar";
+
+const randomPoints: { avatar: Coordinate; eye: Coordinate; mouth: Coordinate }[] = [
+  {
+    avatar: { x: 5, y: 2 },
+    eye: { x: 1, y: 5 },
+    mouth: { x: 0, y: 5 },
+  },
+  {
+    avatar: { x: 7, y: 1 },
+    eye: { x: 8, y: 0 },
+    mouth: { x: 2, y: 0 },
+  },
+  {
+    avatar: { x: 9, y: 1 },
+    eye: { x: 9, y: 2 },
+    mouth: { x: 5, y: 4 },
+  },
+  {
+    avatar: { x: 5, y: 1 },
+    eye: { x: 8, y: 1 },
+    mouth: { x: 9, y: 3 },
+  },
+  {
+    avatar: { x: 4, y: 0 },
+    eye: { x: 2, y: 2 },
+    mouth: { x: 1, y: 4 },
+  },
+  {
+    avatar: { x: 0, y: 1 },
+    eye: { x: 6, y: 3 },
+    mouth: { x: 3, y: 4 },
+  },
+  {
+    avatar: { x: 2, y: 0 },
+    eye: { x: 8, y: 0 },
+    mouth: { x: 5, y: 4 },
+  },
+];
 
 const JoinGameScreen = () => {
   const { socket } = useAppContext();
@@ -60,7 +99,7 @@ const JoinGameScreen = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center">
+    <div className="h-screen flex flex-col justify-center items-center gap-5">
       <Image
         src="/logo.gif"
         alt="Thumbs Up"
@@ -68,6 +107,20 @@ const JoinGameScreen = () => {
         height={200}
         className="object-contain pl-16"
       />
+
+      <div className="flex gap-2">
+        {randomPoints.map((points, index) => {
+          return (
+            <div key={index} className="relative w-[8vh] h-[8vh]">
+              <Avatar
+                avatarCoordinate={points.avatar}
+                eyesCoordinate={points.eye}
+                mouthCoordinate={points.mouth}
+              />
+            </div>
+          );
+        })}
+      </div>
       <div className="flex flex-col gap-5 w-full max-w-md">
         {error === true ? (
           <div className=" text-xl bg-red-500 p-1 rounded-md text-white font-bold">

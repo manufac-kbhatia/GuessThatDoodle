@@ -119,6 +119,8 @@ const SelectAvatar = ({
     const mouth = getPosition(10, randomMouth);
     const avatar = getPosition(10, randomAvatar);
 
+    console.log(avatar, eyes, mouth);
+
     setEyesCoordinate(eyes);
     setAvatarCoordinate(avatar);
     setMouthCoordinate(mouth);
