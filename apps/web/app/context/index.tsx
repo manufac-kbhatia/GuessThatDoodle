@@ -156,7 +156,11 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         const creator = data.creator as PlayerInfo;
         setGame((prev) => {
           if (!prev) return null;
-          return { ...prev, creator: creator,  players: prev.players.filter((p) => p.id !== player.id) };
+          return {
+            ...prev,
+            creator: creator,
+            players: prev.players.filter((p) => p.id !== player.id),
+          };
         });
       }
     };

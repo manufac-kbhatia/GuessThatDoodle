@@ -34,6 +34,7 @@ export class Game {
   }
 
   joinGame = (newPlayer: Player) => {
+    if (this.gameState.state === States.END_TURN) return;
     // Add the new the player in the players list
     this.players.push(newPlayer);
 
@@ -100,10 +101,16 @@ export class Game {
   };
 
   wordSelected = (player: Player, word: string) => {
-    if(this.gameState.state !== States.CHOOSING_WORD) return;
+    if (this.gameState.state !== States.CHOOSING_WORD) {
+      console.log("return 1");
+      return;
+    }
     // Check if the word is selected by current player or not
     const currentPlayerToDraw = this.players[this.gameState.currentPlayer];
-    if (!currentPlayerToDraw || currentPlayerToDraw.id !== player.id) return;
+    if (!currentPlayerToDraw || currentPlayerToDraw.id !== player.id) {
+      console.log("return 3");
+      return;
+    }
 
     // Clear the running timer and set the word
     this.clearTimer();
@@ -133,7 +140,6 @@ export class Game {
     }, this.gameSettings.drawTime * 1000);
     this.setTimer(timer);
   };
-
 
   guessWord = (player: Player, guessedWord: string) => {
     if (this.gameState.state !== States.GUESS_WORD) {
@@ -317,11 +323,11 @@ export class Game {
     const newCreator = this.players[0] ?? this.creator;
     this.creator = newCreator;
 
-    if(this.gameState.state === States.NOT_STARTED) {
+    if (this.gameState.state === States.NOT_STARTED) {
       this.broadcast({
         type: ClientEvents.PLAYER_LEFT,
         player: player.getPlayerInfo(),
-        creator: newCreator.getPlayerInfo()
+        creator: newCreator.getPlayerInfo(),
       });
       return;
     }
@@ -329,13 +335,21 @@ export class Game {
     this.broadcast({
       type: ClientEvents.PLAYER_LEFT,
       player: player.getPlayerInfo(),
-      creator: newCreator.getPlayerInfo()
+      creator: newCreator.getPlayerInfo(),
     });
 
     const endTurnTime = 3;
     setTimeout(() => {
       if (this.players.length === 1) this.endGame();
-      else if (currentPlayerToDraw?.id === player.id) this.nextTurn();
+      else if (currentPlayerToDraw?.id === player.id) {
+        this.gameState.word = "";
+        this.gameState.state = States.CHOOSING_WORD;
+        this.players.forEach((player) => {
+          player.guessed = false;
+          player.guessedAt = null;
+        });
+        this.nextTurn();
+      }
     }, endTurnTime * 1000);
   };
 }

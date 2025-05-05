@@ -11,7 +11,6 @@ const GameHeader = () => {
       ? choosenWord
       : guessWord.map((word) => "_ ".repeat(word).trim()).join("    ");
 
-
   useEffect(() => {
     if (timer <= 0) {
       console.log("running useffect with time", timer);

@@ -22,7 +22,9 @@ const Scoreboard = () => {
                 />
               </div>
               <div>
-                <div>{player.name} {" "} {player.id === game.creator.id ? "(Admin))" : null}</div>
+                <div>
+                  {player.name} {player.id === game.creator.id ? "(Admin))" : null}
+                </div>
                 <div>Score: {player.score}</div>
               </div>
               {currentPlayer?.id === player?.id ? (

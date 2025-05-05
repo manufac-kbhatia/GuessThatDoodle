@@ -12,6 +12,7 @@ import {
   GuessWord,
   ClientEvents,
   ClearBoard,
+  States,
 } from "@repo/common";
 import { Player } from "./managers/PlayerClass";
 import { Game } from "./managers/GameClass";
@@ -61,6 +62,7 @@ wss.on("connection", function connection(ws) {
       clients.set(ws, newPlayer);
       const game = games.get(gameId);
       if (!game) return;
+      if (game.gameState.state === States.GAME_END) return;
       socketToGame.set(ws, game);
       game.joinGame(newPlayer);
     }
