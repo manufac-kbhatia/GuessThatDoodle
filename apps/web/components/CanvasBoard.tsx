@@ -1,5 +1,5 @@
 "use client";
-import { IconTrash } from "@tabler/icons-react";
+import { IconEraser, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { swatchColors } from "../app/utils/swatches";
 import { DrawData } from "@repo/common/types";
@@ -160,7 +160,7 @@ const CanvasBoard = () => {
   }, [socket, myTurn]);
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-1 h-full">
       <canvas
         className={`h-full bg-white ${myTurn ? "cursor-crosshair" : "cursor-default"}`}
         ref={canvasRef}
@@ -178,24 +178,24 @@ const CanvasBoard = () => {
         <div className="flex gap-4">
           <input
             type="color"
-            className="h-10 cursor-pointer"
+            className="h-8 w-8 cursor-pointer"
             value={color}
             onChange={(e) => setColor(e.currentTarget.value)}
           />
-          <div className="grid grid-cols-10 gap-1 rounded-md p-1 bg-neutral-600">
+          <div className="grid grid-cols-10 gap-1 rounded-md p-1 bg-white">
             {swatchColors.map((swatch, idx) => (
               <button
                 key={swatch}
                 title={idx === 0 ? "Basic" : swatch}
-                className={`w-7 h-7 cursor-pointer rounded-md border-2 ${
-                  color === swatch ? "border-black" : "border-none"
+                className={`w-7 h-7 cursor-pointer rounded-full border-2 ${
+                  color === swatch ? "border-black" : "border-neutral-500"
                 } shadow-sm`}
                 style={{ backgroundColor: swatch }}
                 onClick={() => setColor(swatch)}
               />
             ))}
           </div>
-          <div className="flex w-10 h-10 border-2 border-black justify-center items-center">
+          <div className="flex w-10 h-10 border-2 border-black justify-center items-center bg-white rounded-md">
             <div
               style={{
                 width: brushWidth,
@@ -205,7 +205,9 @@ const CanvasBoard = () => {
               }}
             />
           </div>
-          <IconTrash size={30} onClick={handleClear} className="cursor-pointer" />
+          <IconTrash size={30} onClick={handleClear} className="cursor-pointer bg-white rounded-md p-1" />
+          <IconEraser size={30} onClick={() => setColor("#FFFFFF")} className="cursor-pointer bg-white rounded-md p-1" />
+          <IconPencil size={30} onClick={() => setColor("#000000")} className="cursor-pointer bg-white rounded-md p-1" />
         </div>
       ) : null}
     </div>
