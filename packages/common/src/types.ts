@@ -52,6 +52,7 @@ export interface Game {
 export interface PlayerInfo {
   id: string;
   name: string;
+  avatarBody: Coordinate[];
 }
 
 export interface Coordinate {

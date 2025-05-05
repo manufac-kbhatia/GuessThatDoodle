@@ -55,6 +55,7 @@ export class Game {
   };
 
   startGame = (player: Player) => {
+    if (this.gameState.state !== States.NOT_STARTED) return;
     // Check if the player who requested to start the game is the creator or not
     if (this.creator.id !== player.id) return;
     // Check if there are atleast two players to start the game
@@ -99,6 +100,7 @@ export class Game {
   };
 
   wordSelected = (player: Player, word: string) => {
+    if(this.gameState.state !== States.CHOOSING_WORD) return;
     // Check if the word is selected by current player or not
     const currentPlayerToDraw = this.players[this.gameState.currentPlayer];
     if (!currentPlayerToDraw || currentPlayerToDraw.id !== player.id) return;
@@ -131,6 +133,7 @@ export class Game {
     }, this.gameSettings.drawTime * 1000);
     this.setTimer(timer);
   };
+
 
   guessWord = (player: Player, guessedWord: string) => {
     if (this.gameState.state !== States.GUESS_WORD) {
@@ -166,7 +169,6 @@ export class Game {
     // Check if all players except the current player ,have guessed
     const allPlayersGuessed = this.players.every((player) => player.guessed || player.id === currentPlayer?.id);
     if (allPlayersGuessed === true) {
-      3;
       this.endTurn();
     }
   };
@@ -269,6 +271,7 @@ export class Game {
   };
 
   endGame = () => {
+    if (this.gameState.state === States.GAME_END) return;
     this.updateState(States.GAME_END);
     const winner = this.players.reduce((max, player) => (player.score > max.score ? player : max));
     this.broadcast({ type: ClientEvents.GAMEP_END, winner: winner.getPlayerInfo() });
@@ -306,5 +309,33 @@ export class Game {
 
   clearTimer = () => {
     if (this.timer !== null) clearTimeout(this.timer);
+  };
+
+  removePlayer = (player: Player) => {
+    const currentPlayerToDraw = this.players[this.gameState.currentPlayer];
+    this.players = this.players.filter((p) => p.id !== player.id);
+    const newCreator = this.players[0] ?? this.creator;
+    this.creator = newCreator;
+
+    if(this.gameState.state === States.NOT_STARTED) {
+      this.broadcast({
+        type: ClientEvents.PLAYER_LEFT,
+        player: player.getPlayerInfo(),
+        creator: newCreator.getPlayerInfo()
+      });
+      return;
+    }
+
+    this.broadcast({
+      type: ClientEvents.PLAYER_LEFT,
+      player: player.getPlayerInfo(),
+      creator: newCreator.getPlayerInfo()
+    });
+
+    const endTurnTime = 3;
+    setTimeout(() => {
+      if (this.players.length === 1) this.endGame();
+      else if (currentPlayerToDraw?.id === player.id) this.nextTurn();
+    }, endTurnTime * 1000);
   };
 }

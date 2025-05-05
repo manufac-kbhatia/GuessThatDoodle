@@ -4,7 +4,7 @@ import Avatar from "./Avatar";
 import Image from "next/image";
 
 const Scoreboard = () => {
-  const { game, me, currentPlayer } = useAppContext();
+  const { game, currentPlayer } = useAppContext();
   return (
     <div className="flex flex-col bg-white rounded-md h-full overflow-hidden">
       {game?.players.map((player, index) => {
@@ -22,7 +22,7 @@ const Scoreboard = () => {
                 />
               </div>
               <div>
-                <div>{player.name} {player.id === me?.id ? <>(You)</> : null}</div>
+                <div>{player.name} {" "} {player.id === game.creator.id ? "(Admin))" : null}</div>
                 <div>Score: {player.score}</div>
               </div>
               {currentPlayer?.id === player?.id ? (

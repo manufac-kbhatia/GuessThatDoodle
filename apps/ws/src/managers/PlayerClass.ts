@@ -36,6 +36,7 @@ export class Player {
     const player: PlayerInfo = {
       id: this.id,
       name: this.name,
+      avatarBody: this.avatarBody,
     };
     return player;
   };

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 export interface WordSelectOverlayType {
   onWordSelect: (word: string) => void;
@@ -6,7 +7,12 @@ export interface WordSelectOverlayType {
 const WordSelectOverlay = ({ onWordSelect, words }: WordSelectOverlayType) => {
   return (
     <div className="inset-0 absolute bg-neutral-400 space-y-2 p-4 flex flex-col justify-center items-center">
-      <h2 className="text-3xl font-bold">Select a word to draw</h2>
+      <div className="flex">
+        <h2 className="text-3xl font-bold">Select a word to draw</h2>
+        <div className="w-10 h-10 relative">
+          <Image src="/pencil.gif" alt="Thumbs Down" fill className="object-contain" />
+        </div>
+      </div>
       <div className="flex gap-2 text-lg font-bold">
         {words.map((word) => (
           <button

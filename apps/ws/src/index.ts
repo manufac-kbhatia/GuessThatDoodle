@@ -19,6 +19,7 @@ import { Game } from "./managers/GameClass";
 const wss = new WebSocketServer({ port: 8080 });
 
 const clients = new Map<WebSocket, Player>();
+const socketToGame = new Map<WebSocket, Game>();
 const games = new Map<string, Game>();
 
 wss.on("connection", function connection(ws) {
@@ -43,6 +44,7 @@ wss.on("connection", function connection(ws) {
       const creator = new Player(ws, playerName, avatarBody);
       const game = new Game(creator);
       clients.set(ws, creator);
+      socketToGame.set(ws, game);
       games.set(game.gameId, game);
       // Send created game to the creator
       creator.send({
@@ -59,6 +61,7 @@ wss.on("connection", function connection(ws) {
       clients.set(ws, newPlayer);
       const game = games.get(gameId);
       if (!game) return;
+      socketToGame.set(ws, game);
       game.joinGame(newPlayer);
     }
 
@@ -102,6 +105,22 @@ wss.on("connection", function connection(ws) {
       const game = games.get(gameId);
       if (!game) return;
       game.clearBoard(player);
+    }
+  });
+
+  ws.on("close", () => {
+    const player = clients.get(ws);
+    const game = socketToGame.get(ws);
+    if (!player || !game) {
+      clients.delete(ws);
+      socketToGame.delete(ws);
+      return;
+    } else {
+      game.removePlayer(player);
+      clients.delete(ws);
+      if (game.players.length < 2) {
+        socketToGame.delete(ws);
+      }
     }
   });
 });

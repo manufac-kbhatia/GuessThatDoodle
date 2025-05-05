@@ -80,6 +80,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       }
 
       if (data.type === ClientEvents.CHOOSING_WORD) {
+        console.log(data);
         const currentPlayer = data.player as PlayerInfo;
         setMyTurn(false);
         setChoosenWord(null);
@@ -94,6 +95,7 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
       }
 
       if (data.type === ClientEvents.CHOOSE_WORD) {
+        console.log(data);
         const words = data.words as string[];
         setChoosenWord(null);
         setWords(words);
@@ -145,6 +147,16 @@ export function SocketContextProvider({ children }: PropsWithChildren): JSX.Elem
         setGame((prev) => {
           if (!prev) return null;
           return { ...prev, gameState: { currentRound: 0, state: States.GAME_END } };
+        });
+        setTimer(0);
+      }
+
+      if (data.type === ClientEvents.PLAYER_LEFT) {
+        const player = data.player as PlayerInfo;
+        const creator = data.creator as PlayerInfo;
+        setGame((prev) => {
+          if (!prev) return null;
+          return { ...prev, creator: creator,  players: prev.players.filter((p) => p.id !== player.id) };
         });
       }
     };

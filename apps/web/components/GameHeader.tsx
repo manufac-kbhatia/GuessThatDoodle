@@ -4,25 +4,22 @@ import { States } from "@repo/common";
 import Image from "next/image";
 
 const GameHeader = () => {
-  const { game, myTurn, choosenWord, guessWord, timer } = useAppContext();
-  const [time, setTime] = useState(timer);
+  const { game, myTurn, choosenWord, guessWord, timer, setTimer } = useAppContext();
 
   const guessTheWord =
     game?.gameState.state === States.GUESS_WORD && myTurn
       ? choosenWord
       : guessWord.map((word) => "_ ".repeat(word).trim()).join("    ");
 
-  console.log(guessTheWord);
 
   useEffect(() => {
-    setTime(timer);
-  }, [timer]);
-
-  useEffect(() => {
-    if (time <= 0) return;
+    if (timer <= 0) {
+      console.log("running useffect with time", timer);
+      return;
+    }
 
     const interval = setInterval(() => {
-      setTime((prev) => {
+      setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
           return 0;
@@ -32,14 +29,14 @@ const GameHeader = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [time]);
+  }, [setTimer, timer]);
 
   return (
     <div className="flex justify-between items-center p-2 bg-white rounded-md">
       <div className="flex justify-center items-center gap-2 text-2xl">
         <div className="w-15 h-15 relative flex justify-center items-center">
           <Image src="/clock.gif" alt="Thumbs Up" fill className="object-contain" />
-          <div className="z-10 font-bold pt-1">{time}</div>
+          <div className="z-10 font-bold pt-1">{timer}</div>
         </div>
         <div>
           Round {game?.gameState.currentRound} of {game?.gameSettings.rounds}
