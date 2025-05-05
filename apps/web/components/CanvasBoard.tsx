@@ -12,7 +12,7 @@ const CanvasBoard = () => {
   const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
-  let drawing = false;
+  let drawing = useRef(false);
 
   function getCoords(
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
@@ -31,7 +31,7 @@ const CanvasBoard = () => {
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
   ) {
     if (!myTurn) return;
-    drawing = true;
+    drawing.current = true;
     const { x, y } = getCoords(event);
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
@@ -44,7 +44,7 @@ const CanvasBoard = () => {
   function draw(
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
   ) {
-    if (!drawing || !canvasRef.current || !game || !me) return;
+    if (!drawing.current || !canvasRef.current || !game || !me) return;
     const { x, y } = getCoords(event);
     const ctx = canvasRef.current.getContext("2d");
     if (ctx) {
@@ -75,7 +75,7 @@ const CanvasBoard = () => {
 
   function stopDrawing() {
     if (!drawing || !socket || !me || !game) return;
-    drawing = false;
+    drawing.current = false;
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) ctx.beginPath();
     if (!drawData.current) return;

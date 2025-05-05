@@ -50,7 +50,7 @@ const SettingOverlay = ({ settings }: { settings: GameSettings }) => {
             Invite
           </button>
         </div>
-      </div>ˀ
+      </div>
     </div>
   );
 };
