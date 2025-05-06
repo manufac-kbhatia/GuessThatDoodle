@@ -5,7 +5,7 @@ import Drawboard from "./Drawboard";
 
 const GameScreen = () => {
   return (
-    <div className="h-screen p-16 space-y-2">
+    <div className="h-screen p-8">
       <div className="grid grid-cols-12 gap-2">
         <div className="col-span-12">
           <GameHeader />

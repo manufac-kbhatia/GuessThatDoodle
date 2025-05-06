@@ -12,7 +12,7 @@ const CanvasBoard = () => {
   const drawData = useRef<DrawData[]>([]);
   const [color, setColor] = useState<string>("#000000");
   const [brushWidth, setBrushWidth] = useState<number>(5);
-  let drawing = useRef(false);
+  const drawing = useRef(false);
 
   function getCoords(
     event: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>,
@@ -205,9 +205,9 @@ const CanvasBoard = () => {
               }}
             />
           </div>
-          <IconTrash size={30} onClick={handleClear} className="cursor-pointer bg-white rounded-md p-1" />
-          <IconEraser size={30} onClick={() => setColor("#FFFFFF")} className="cursor-pointer bg-white rounded-md p-1" />
-          <IconPencil size={30} onClick={() => setColor("#000000")} className="cursor-pointer bg-white rounded-md p-1" />
+          <IconTrash size={40} onClick={handleClear} className="cursor-pointer bg-white border-2 border-black rounded-md p-1" />
+          <IconEraser size={40} onClick={() => setColor("#FFFFFF")} className="cursor-pointer bg-white border-2 border-black rounded-md p-1" />
+          <IconPencil size={40} onClick={() => setColor("#000000")} className="cursor-pointer bg-white border-2 border-black rounded-md p-1" />
         </div>
       ) : null}
     </div>

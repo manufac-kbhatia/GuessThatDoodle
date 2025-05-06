@@ -34,13 +34,12 @@ const SettingOverlay = ({ settings }: { settings: GameSettings }) => {
         </div>
 
         <div className="flex gap-2">
-          <button
-            className="flex-1 text-4xl bg-blue-400 rounded-md p-1 border-2 border-black transition active:scale-95"
-            disabled={game?.creator.id !== me?.id}
+          {game?.creator.id === me?.id ? <button
+            className="flex-1 text-4xl bg-blue-400 rounded-md p-1 border-2 border-black cursor-pointer transition active:scale-95"
             onClick={handleStart}
           >
             Start
-          </button>
+          </button>: null }
           <button
             className="flex-1 text-4xl bg-green-500 rounded-md p-1 border-2 border-black cursor-pointer transition active:scale-95"
             onClick={() =>
