@@ -6,7 +6,7 @@ import Image from "next/image";
 const Scoreboard = () => {
   const { game, currentPlayer } = useAppContext();
   return (
-    <div className="flex flex-col bg-white rounded-md h-full overflow-hidden">
+    <div className="flex flex-col bg-white rounded-md max-h-[15vh] lg:max-h-full overflow-scroll">
       {game?.players.map((player, index) => {
         const avatarCoordinate = player.avatarBody[0] ?? { x: 0, y: 0 };
         const eyesCoordinate = player.avatarBody[1] ?? { x: 0, y: 0 };

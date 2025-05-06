@@ -32,8 +32,8 @@ const GameHeader = () => {
 
   return (
     <div className="flex justify-between items-center p-2 bg-white rounded-md">
-      <div className="flex justify-center items-center gap-2 text-2xl">
-        <div className="w-15 h-15 relative flex justify-center items-center">
+      <div className="flex justify-center items-center gap-2 md:text-2xl">
+        <div className="w-10 h-10 md:w-15 md:h-15 relative flex justify-center items-center">
           <Image src="/clock.gif" alt="Thumbs Up" fill className="object-contain" />
           <div className="z-10 font-bold pt-1">{timer}</div>
         </div>
@@ -41,13 +41,13 @@ const GameHeader = () => {
           Round {game?.gameState.currentRound} of {game?.gameSettings.rounds}
         </div>
       </div>
-      <div className="flex flex-col gap-2 justify-center items-center text-2xl">
+      <div className="flex flex-col gap-2 justify-center items-center md:text-2xl">
         {game?.gameState.state === States.GUESS_WORD
           ? myTurn === true
             ? "Draw"
             : "Guess"
           : "Waiting"}
-        <div className="text-black">{guessTheWord}</div>
+        {guessTheWord && <div className="text-black">{guessTheWord}</div>}
       </div>
 
       <div className="flex">

@@ -43,7 +43,7 @@ const SettingOverlay = ({ settings }: { settings: GameSettings }) => {
           <button
             className="flex-1 text-4xl bg-green-500 rounded-md p-1 border-2 border-black cursor-pointer transition active:scale-95"
             onClick={() =>
-              navigator.clipboard.writeText(`https://guessthatdoodle.vercel.app/?game=${game?.gameId}`)
+              navigator.clipboard.writeText(`http://localhost:3000/?game=${game?.gameId}`)
             }
           >
             Invite

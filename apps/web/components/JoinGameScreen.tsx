@@ -39,12 +39,7 @@ const randomPoints: { avatar: Coordinate; eye: Coordinate; mouth: Coordinate }[]
     avatar: { x: 0, y: 1 },
     eye: { x: 6, y: 3 },
     mouth: { x: 3, y: 4 },
-  },
-  {
-    avatar: { x: 2, y: 0 },
-    eye: { x: 8, y: 0 },
-    mouth: { x: 5, y: 4 },
-  },
+  }
 ];
 
 const JoinGameScreen = () => {
@@ -99,40 +94,39 @@ const JoinGameScreen = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center gap-5">
+    <div className="h-screen flex flex-col justify-center items-center gap-5 px-4 sm:px-6 md:px-0 py-6">
       <Image
         src="/logo.gif"
         alt="Thumbs Up"
-        width={700}
+        width={600}
         height={200}
-        className="object-contain pl-16"
+        className="object-contain sm:pl-20 pl-14"
       />
-
-      <div className="flex gap-2">
-        {randomPoints.map((points, index) => {
-          return (
-            <div key={index} className="relative w-[8vh] h-[8vh]">
-              <Avatar
-                avatarCoordinate={points.avatar}
-                eyesCoordinate={points.eye}
-                mouthCoordinate={points.mouth}
-              />
-            </div>
-          );
-        })}
-      </div>
-      <div className="flex flex-col gap-5 w-full max-w-md">
-        {error === true ? (
-          <div className=" text-xl bg-red-500 p-1 rounded-md text-white font-bold">
-            Please enter a name with atleat 4 characters!
+  
+      <div className="flex flex-wrap justify-center gap-2">
+        {randomPoints.map((points, index) => (
+          <div key={index} className="relative w-[8vh] h-[8vh]">
+            <Avatar
+              avatarCoordinate={points.avatar}
+              eyesCoordinate={points.eye}
+              mouthCoordinate={points.mouth}
+            />
           </div>
-        ) : null}
+        ))}
+      </div>
+  
+      <div className="flex flex-col gap-4 w-full max-w-md">
+        {error === true && (
+          <div className="text-base sm:text-xl bg-red-500 p-2 rounded-md text-white font-bold text-center">
+            Please enter a name with at least 4 characters!
+          </div>
+        )}
         <input
           type="text"
           placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.currentTarget.value)}
-          className="p-2 text-4xl bg-white rounded-md"
+          className="p-2 text-2xl sm:text-4xl bg-white rounded-md w-full"
         />
         <SelectAvatar
           avatarCoordinate={avatarCoordinate}
@@ -143,20 +137,21 @@ const JoinGameScreen = () => {
           setMouthCoordinate={setMouthCoordinate}
         />
         <button
-          className="text-4xl text-white bg-blue-400 rounded-md transition active:scale-95 cursor-pointer"
+          className="text-2xl sm:text-4xl text-white bg-blue-400 rounded-md transition active:scale-95 cursor-pointer w-full py-2"
           onClick={handlePlay}
         >
           Play!
         </button>
         <button
           onClick={handleCreateGame}
-          className="text-4xl text-white bg-green-400 rounded-md transition active:scale-95 cursor-pointer"
+          className="text-2xl sm:text-4xl text-white bg-green-400 rounded-md transition active:scale-95 cursor-pointer w-full py-2"
         >
           Create Game
         </button>
       </div>
     </div>
   );
+  
 };
 
 export default JoinGameScreen;

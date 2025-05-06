@@ -160,7 +160,7 @@ const CanvasBoard = () => {
   }, [socket, myTurn]);
 
   return (
-    <div className="flex flex-col gap-1 h-full">
+    <div className="flex flex-col gap-1 h-full lg:relative">
       <canvas
         className={`h-full bg-white ${myTurn ? "cursor-crosshair" : "cursor-default"}`}
         ref={canvasRef}
@@ -175,14 +175,14 @@ const CanvasBoard = () => {
         height={900}
       />
       {myTurn ? (
-        <div className="flex gap-4">
+        <div className="flex gap-4 absolute top-2">
           <input
             type="color"
             className="h-8 w-8 cursor-pointer"
             value={color}
             onChange={(e) => setColor(e.currentTarget.value)}
           />
-          <div className="grid grid-cols-10 gap-1 rounded-md p-1 bg-white">
+          <div className="grid grid-cols-5 lg:grid-cols-10 gap-1 rounded-md p-1 bg-white">
             {swatchColors.map((swatch, idx) => (
               <button
                 key={swatch}

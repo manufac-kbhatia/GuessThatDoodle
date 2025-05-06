@@ -60,8 +60,8 @@ const Chats = () => {
   }, [chats]);
 
   return (
-    <div className="flex flex-col bg-white h-full justify-between rounded-md">
-      <div className="flex-1 overflow-scroll max-h-[60vh]" ref={containerRef}>
+    <div className="flex flex-col bg-white max-h-full lg:min-h-full gap-1 lg:justify-between rounded-md">
+      <div className="flex-1 overflow-scroll max-h-[10vh] lg:max-h-[60vh]" ref={containerRef}>
         {chats.map((chat, index) => (
           <div
             key={index}
