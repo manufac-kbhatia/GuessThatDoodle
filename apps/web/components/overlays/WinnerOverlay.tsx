@@ -5,7 +5,7 @@ const WinnerOverlay = ({ winner }: { winner: PlayerInfo }) => {
   return (
     <div className="inset-0 absolute bg-neutral-400 space-y-2 p-4 flex flex-col justify-center items-center">
       <div className="text-3xl font-bold">
-        <span className="text-yellow-300">{winner?.name}</span> is the winner!
+        <span className="text-yellow-300 text-center">{winner?.name}</span> is the winner!
       </div>
       <div className="relative w-[10vh] h-[10vh]">
         <Avatar

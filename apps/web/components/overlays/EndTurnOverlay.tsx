@@ -8,7 +8,7 @@ export interface EndTurnType {
 const EndTurnOverlay = ({ players, choosenWord }: EndTurnType) => {
   return (
     <div className="inset-0 absolute bg-neutral-400 space-y-2 p-4 flex flex-col justify-center items-center">
-      <h2 className="text-3xl font-bold">
+      <h2 className="text-3xl font-bold text-center">
         The word was: <span className="text-yellow-300">{choosenWord}</span>
       </h2>
       <div className="flex flex-col gap-2 text-lg font-bold">

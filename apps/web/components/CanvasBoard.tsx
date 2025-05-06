@@ -175,7 +175,7 @@ const CanvasBoard = () => {
         height={900}
       />
       {myTurn ? (
-        <div className="flex gap-4 absolute top-2">
+        <div className="flex gap-4 absolute lg:relative top-2">
           <input
             type="color"
             className="h-8 w-8 cursor-pointer"
